@@ -38,7 +38,8 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker_manager?serverVersion=12&charset=utf8
       AUTHENTICATION_BASE_URL: http://worker-manager-http
-      DIGITALOCEAN_API_TOKEN: intentionally_invalid_token
+      PRIMARY_DIGITALOCEAN_API_TOKEN: intentionally_invalid_primary_token
+      SECONDARY_DIGITALOCEAN_API_TOKEN: intentionally_invalid_secondary_token
       IS_READY: 1
     depends_on:
       - postgres
