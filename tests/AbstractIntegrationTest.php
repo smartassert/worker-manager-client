@@ -62,13 +62,6 @@ abstract class AbstractIntegrationTest extends TestCase
         return $apiToken;
     }
 
-    private static function createServiceClient(): ServiceClient
-    {
-        $httpFactory = new HttpFactory();
-
-        return new ServiceClient($httpFactory, $httpFactory, new HttpClient(), new ResponseDecoder());
-    }
-
     protected function waitUntilMachineStateIs(string $expectedState, Machine $machine): Machine
     {
         $waitTotal = 0;
@@ -92,5 +85,12 @@ abstract class AbstractIntegrationTest extends TestCase
         }
 
         return $machine;
+    }
+
+    private static function createServiceClient(): ServiceClient
+    {
+        $httpFactory = new HttpFactory();
+
+        return new ServiceClient($httpFactory, $httpFactory, new HttpClient(), new ResponseDecoder());
     }
 }
