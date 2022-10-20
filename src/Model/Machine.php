@@ -7,7 +7,8 @@ namespace SmartAssert\WorkerManagerClient\Model;
 class Machine
 {
     /**
-     * @param string[] $ipAddresses
+     * @param non-empty-string $id
+     * @param string[]         $ipAddresses
      */
     public function __construct(
         public readonly string $id,
