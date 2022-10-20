@@ -23,7 +23,7 @@ class GetMachineTest extends AbstractIntegrationTest
         $waitTotal = 0;
         $waitThreshold = 120;
 
-        while ('find/not-findable' !== $machine->state && $waitTotal < $waitThreshold) {
+        while ($expectedEndState !== $machine->state && $waitTotal < $waitThreshold) {
             $waitTotal += 5;
             sleep(5);
             $machine = self::$client->getMachine(self::$user1ApiToken->token, $machineId);
@@ -40,6 +40,6 @@ class GetMachineTest extends AbstractIntegrationTest
             ));
         }
 
-        self::assertSame('find/not-findable', $machine->state);
+        self::assertSame($expectedEndState, $machine->state);
     }
 }
