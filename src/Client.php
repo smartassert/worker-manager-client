@@ -59,6 +59,25 @@ class Client
     }
 
     /**
+     * @param non-empty-string $userToken
+     * @param non-empty-string $machineId
+     *
+     * @throws ClientExceptionInterface
+     * @throws InvalidResponseContentException
+     * @throws InvalidResponseDataException
+     * @throws NonSuccessResponseException
+     */
+    public function getMachine(string $userToken, string $machineId): ?Machine
+    {
+        $responseData = $this->serviceClient->sendRequestForJsonEncodedData(
+            (new Request('GET', $this->createUrl('/machine/' . $machineId)))
+                ->withAuthentication(new BearerAuthentication($userToken))
+        );
+
+        return $this->objectFactory->createMachineFromArray($responseData);
+    }
+
+    /**
      * @param non-empty-string $path
      *
      * @return non-empty-string
