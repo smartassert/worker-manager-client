@@ -6,16 +6,16 @@ namespace SmartAssert\WorkerManagerClient\Tests;
 
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
-class GetMachineTest extends AbstractIntegrationTest
+class DeleteMachineTest extends AbstractIntegrationTest
 {
-    public function testGetSuccess(): void
+    public function testDeleteSuccess(): void
     {
         $machineId = md5((string) rand());
 
-        $expectedStartState = 'find/received';
-        $expectedEndState = 'find/not-findable';
+        $expectedStartState = 'delete/received';
+        $expectedEndState = 'delete/failed';
 
-        $machine = self::$client->getMachine(self::$user1ApiToken->token, $machineId);
+        $machine = self::$client->deleteMachine(self::$user1ApiToken->token, $machineId);
         self::assertInstanceOf(Machine::class, $machine);
         self::assertSame($machineId, $machine->id);
         self::assertSame($expectedStartState, $machine->state);
@@ -30,7 +30,7 @@ class GetMachineTest extends AbstractIntegrationTest
             self::assertInstanceOf(Machine::class, $machine);
         }
 
-        if ($waitTotal >= $waitThreshold) {
+        if ($expectedEndState !== $machine->state && $waitTotal >= $waitThreshold) {
             self::fail(sprintf(
                 'Waited %s seconds of %s for machine to be "%s". Machine is "%s"',
                 $waitTotal,
