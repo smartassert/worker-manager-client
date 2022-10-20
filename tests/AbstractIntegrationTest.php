@@ -15,6 +15,7 @@ use SmartAssert\UsersClient\Model\Token;
 use SmartAssert\UsersClient\Model\User;
 use SmartAssert\UsersClient\ObjectFactory as UsersObjectFactory;
 use SmartAssert\WorkerManagerClient\Client;
+use SmartAssert\WorkerManagerClient\Model\Machine;
 use SmartAssert\WorkerManagerClient\ObjectFactory;
 
 abstract class AbstractIntegrationTest extends TestCase
@@ -66,5 +67,30 @@ abstract class AbstractIntegrationTest extends TestCase
         $httpFactory = new HttpFactory();
 
         return new ServiceClient($httpFactory, $httpFactory, new HttpClient(), new ResponseDecoder());
+    }
+
+    protected function waitUntilMachineStateIs(string $expectedState, Machine $machine): Machine
+    {
+        $waitTotal = 0;
+        $waitThreshold = 120;
+
+        while ($expectedState !== $machine->state && $waitTotal < $waitThreshold) {
+            $waitTotal += 5;
+            sleep(5);
+            $machine = self::$client->getMachine(self::$user1ApiToken->token, $machine->id);
+            self::assertInstanceOf(Machine::class, $machine);
+        }
+
+        if ($waitTotal >= $waitThreshold) {
+            self::fail(sprintf(
+                'Waited %s seconds of %s for machine to be "%s". Machine is "%s"',
+                $waitTotal,
+                $waitThreshold,
+                $expectedState,
+                $machine->state
+            ));
+        }
+
+        return $machine;
     }
 }

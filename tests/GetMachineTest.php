@@ -20,25 +20,7 @@ class GetMachineTest extends AbstractIntegrationTest
         self::assertSame($machineId, $machine->id);
         self::assertSame($expectedStartState, $machine->state);
 
-        $waitTotal = 0;
-        $waitThreshold = 120;
-
-        while ($expectedEndState !== $machine->state && $waitTotal < $waitThreshold) {
-            $waitTotal += 5;
-            sleep(5);
-            $machine = self::$client->getMachine(self::$user1ApiToken->token, $machineId);
-            self::assertInstanceOf(Machine::class, $machine);
-        }
-
-        if ($waitTotal >= $waitThreshold) {
-            self::fail(sprintf(
-                'Waited %s seconds of %s for machine to be "%s". Machine is "%s"',
-                $waitTotal,
-                $waitThreshold,
-                $expectedEndState,
-                $machine->state
-            ));
-        }
+        $machine = $this->waitUntilMachineStateIs($expectedEndState, $machine);
 
         self::assertSame($expectedEndState, $machine->state);
     }
