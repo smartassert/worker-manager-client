@@ -5,22 +5,20 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient;
 
 use SmartAssert\WorkerManagerClient\Model\BadCreateMachineResponse;
-use SmartAssert\WorkerManagerClient\Model\MachineRequestResponse;
+use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class ObjectFactory
 {
     /**
      * @param array<mixed> $data
      */
-    public function createMachineRequestResponseFromArray(array $data): ?MachineRequestResponse
+    public function createMachineFromArray(array $data): ?Machine
     {
-        $machineId = $this->getNonEmptyStringValue('machine_id', $data);
-        $requestedAction = $this->getNonEmptyStringValue('requested_action', $data);
-        $statusUrl = $this->getNonEmptyStringValue('status_url', $data);
+        $id = $this->getNonEmptyStringValue('id', $data);
+        $state = $this->getNonEmptyStringValue('state', $data);
+        $ipAddresses = $this->getNonEmptyStringArrayValue('ip_addresses', $data);
 
-        return null === $machineId || null === $requestedAction || null === $statusUrl
-            ? null
-            : new MachineRequestResponse($machineId, $requestedAction, $statusUrl);
+        return null === $id || null === $state ? null : new Machine($id, $state, $ipAddresses);
     }
 
     /**
@@ -55,9 +53,7 @@ class ObjectFactory
      */
     private function getNonEmptyStringValue(string $key, array $data): ?string
     {
-        $value = trim((string) $this->getStringValue($key, $data));
-
-        return '' === $value ? null : $value;
+        return $this->createNonEmptyString(trim((string) $this->getStringValue($key, $data)));
     }
 
     /**
@@ -69,5 +65,38 @@ class ObjectFactory
         $value = $data[$key] ?? null;
 
         return is_int($value) ? $value : null;
+    }
+
+    /**
+     * @return ?non-empty-string
+     */
+    private function createNonEmptyString(string $value): ?string
+    {
+        $value = trim($value);
+
+        return '' === $value ? null : $value;
+    }
+
+    /**
+     * @param array<mixed> $data
+     *
+     * @return non-empty-string[]
+     */
+    private function getNonEmptyStringArrayValue(string $key, array $data): array
+    {
+        $values = [];
+
+        $unfilteredValues = $data[$key] ?? [];
+        $unfilteredValues = is_array($unfilteredValues) ? $unfilteredValues : [];
+
+        foreach ($unfilteredValues as $unfilteredValue) {
+            $filteredValue = $this->createNonEmptyString($unfilteredValue);
+
+            if (is_string($filteredValue)) {
+                $values[] = $filteredValue;
+            }
+        }
+
+        return $values;
     }
 }

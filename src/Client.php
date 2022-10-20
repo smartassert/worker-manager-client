@@ -13,7 +13,7 @@ use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
 use SmartAssert\ServiceClient\Request;
 use SmartAssert\ServiceClient\ResponseDecoder;
 use SmartAssert\WorkerManagerClient\Model\BadCreateMachineResponse;
-use SmartAssert\WorkerManagerClient\Model\MachineRequestResponse;
+use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class Client
 {
@@ -37,14 +37,14 @@ class Client
     public function createMachine(
         string $userToken,
         string $machineId
-    ): null|MachineRequestResponse|BadCreateMachineResponse {
+    ): null|Machine|BadCreateMachineResponse {
         try {
             $responseData = $this->serviceClient->sendRequestForJsonEncodedData(
                 (new Request('POST', $this->createUrl('/machine/' . $machineId)))
                     ->withAuthentication(new BearerAuthentication($userToken))
             );
 
-            return $this->objectFactory->createMachineRequestResponseFromArray($responseData);
+            return $this->objectFactory->createMachineFromArray($responseData);
         } catch (NonSuccessResponseException $exception) {
             $response = $exception->response;
 
