@@ -8,8 +8,7 @@ class Machine
 {
     /**
      * @param non-empty-string $id
-     *
-     * @param string[] $ipAddresses
+     * @param string[]         $ipAddresses
      */
     public function __construct(
         public readonly string $id,
