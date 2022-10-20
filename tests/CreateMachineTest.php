@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient\Tests;
 
 use SmartAssert\WorkerManagerClient\Model\BadCreateMachineResponse;
-use SmartAssert\WorkerManagerClient\Model\MachineRequestResponse;
+use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class CreateMachineTest extends AbstractIntegrationTest
 {
@@ -14,7 +14,7 @@ class CreateMachineTest extends AbstractIntegrationTest
         $machineId = md5((string) rand());
 
         $response = self::$client->createMachine(self::$user1ApiToken->token, $machineId);
-        if ($response instanceof MachineRequestResponse) {
+        if ($response instanceof Machine) {
             $response = self::$client->createMachine(self::$user1ApiToken->token, $machineId);
         }
 
@@ -27,9 +27,9 @@ class CreateMachineTest extends AbstractIntegrationTest
         $machineId = md5((string) rand());
 
         $response = self::$client->createMachine(self::$user1ApiToken->token, $machineId);
-        self::assertInstanceOf(MachineRequestResponse::class, $response);
+        self::assertInstanceOf(Machine::class, $response);
         self::assertEquals(
-            new MachineRequestResponse($machineId, 'create', '/machine/' . $machineId),
+            new Machine($machineId, 'create/received', []),
             $response
         );
     }
