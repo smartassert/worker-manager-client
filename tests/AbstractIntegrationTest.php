@@ -7,6 +7,7 @@ namespace SmartAssert\WorkerManagerClient\Tests;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\HttpFactory;
 use PHPUnit\Framework\TestCase;
+use SmartAssert\ServiceClient\ArrayAccessor;
 use SmartAssert\ServiceClient\Client as ServiceClient;
 use SmartAssert\ServiceClient\ResponseDecoder;
 use SmartAssert\UsersClient\Client as UsersClient;
@@ -33,7 +34,9 @@ abstract class AbstractIntegrationTest extends TestCase
         self::$client = new Client(
             'http://localhost:9081',
             self::createServiceClient(),
-            new ObjectFactory(),
+            new ObjectFactory(
+                new ArrayAccessor()
+            ),
             new ResponseDecoder(),
         );
         self::$user1ApiToken = self::createUserApiToken(self::USER1_EMAIL, self::USER1_PASSWORD);
