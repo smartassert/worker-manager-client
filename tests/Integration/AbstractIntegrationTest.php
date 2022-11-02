@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SmartAssert\WorkerManagerClient\Tests;
+namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\HttpFactory;
