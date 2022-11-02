@@ -79,7 +79,8 @@
         "phpstan/phpstan-phpunit": "^1.1",
         "smartassert/users-client": "^1.1",
         "mockery/mockery": "^1.5",
-        "phpstan/phpstan-mockery": "^1.1"
+        "phpstan/phpstan-mockery": "^1.1",
+        "webignition/http-history-container": "^2.5"
     },
     "minimum-stability":"stable",
     "prefer-stable":true,
