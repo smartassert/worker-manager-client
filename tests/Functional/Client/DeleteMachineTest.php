@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SmartAssert\WorkerManagerClient\Tests\Functional\Client;
+
+use GuzzleHttp\Psr7\Response;
+
+class DeleteMachineTest extends AbstractClientTest
+{
+    public function testDeleteMachineRequestProperties(): void
+    {
+        $userToken = md5((string) rand());
+        $machineId = md5((string) rand());
+
+        $this->mockHandler->append(new Response(
+            202,
+            ['content-type' => 'application/json'],
+            (string) json_encode([
+                'id' => $machineId,
+                'state' => 'create/requested',
+                'ip_addresses' => [],
+            ])
+        ));
+
+        $this->client->deleteMachine($userToken, $machineId);
+
+        $request = $this->getLastRequest();
+        self::assertSame('DELETE', $request->getMethod());
+        self::assertSame('Bearer ' . $userToken, $request->getHeaderLine('authorization'));
+    }
+
+    protected function createClientActionCallable(): callable
+    {
+        return function () {
+            $userToken = md5((string) rand());
+            $machineId = md5((string) rand());
+
+            $this->client->deleteMachine($userToken, $machineId);
+        };
+    }
+}
