@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient\Tests\Functional\Client;
 
 use GuzzleHttp\Psr7\Response;
+use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class DeleteMachineTest extends AbstractClientTest
 {
@@ -38,5 +39,10 @@ class DeleteMachineTest extends AbstractClientTest
 
             $this->client->deleteMachine($userToken, $machineId);
         };
+    }
+
+    protected function getExpectedModelClass(): string
+    {
+        return Machine::class;
     }
 }

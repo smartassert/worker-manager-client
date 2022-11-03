@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient;
 
 use Psr\Http\Client\ClientExceptionInterface;
+use SmartAssert\ArrayInspector\ArrayInspector;
 use SmartAssert\ServiceClient\Authentication\BearerAuthentication;
 use SmartAssert\ServiceClient\Client as ServiceClient;
+use SmartAssert\ServiceClient\Exception\InvalidModelDataException;
 use SmartAssert\ServiceClient\Exception\InvalidResponseContentException;
 use SmartAssert\ServiceClient\Exception\InvalidResponseDataException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
 use SmartAssert\ServiceClient\Request;
-use SmartAssert\ServiceClient\ResponseDecoder;
 use SmartAssert\WorkerManagerClient\Model\BadCreateMachineResponse;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
@@ -20,8 +21,6 @@ class Client
     public function __construct(
         private readonly string $baseUrl,
         private readonly ServiceClient $serviceClient,
-        private readonly ObjectFactory $objectFactory,
-        private readonly ResponseDecoder $responseDecoder,
     ) {
     }
 
@@ -33,29 +32,43 @@ class Client
      * @throws InvalidResponseContentException
      * @throws InvalidResponseDataException
      * @throws NonSuccessResponseException
+     * @throws InvalidModelDataException
      */
     public function createMachine(
         string $userToken,
         string $machineId
-    ): null|Machine|BadCreateMachineResponse {
-        try {
-            $responseData = $this->serviceClient->sendRequestForJsonEncodedData(
-                (new Request('POST', $this->createUrl('/machine/' . $machineId)))
-                    ->withAuthentication(new BearerAuthentication($userToken))
-            );
+    ): Machine|BadCreateMachineResponse {
+        $response = $this->serviceClient->sendRequestForJsonEncodedData(
+            (new Request('POST', $this->createUrl('/machine/' . $machineId)))
+                ->withAuthentication(new BearerAuthentication($userToken))
+        );
 
-            return $this->objectFactory->createMachineFromArray($responseData);
-        } catch (NonSuccessResponseException $exception) {
-            $response = $exception->response;
+        if (!$response->isSuccessful()) {
+            $httpResponse = $response->getHttpResponse();
 
-            if (400 === $exception->getCode() && 'application/json' === $response->getHeaderLine('content-type')) {
-                $badRequestResponseData = $this->responseDecoder->decodedJsonResponse($response);
+            if (
+                400 === $httpResponse->getStatusCode()
+                && 'application/json' === $httpResponse->getHeaderLine('content-type')
+            ) {
+                $responseDataInspector = new ArrayInspector($response->getData());
+                $badRequestResponse = $this->createBadCreateMachineResponseModel($responseDataInspector);
 
-                return $this->objectFactory->createBadCreateMachineResponseFromArray($badRequestResponseData);
+                if ($badRequestResponse instanceof BadCreateMachineResponse) {
+                    return $badRequestResponse;
+                }
             }
 
-            throw $exception;
+            throw new NonSuccessResponseException($httpResponse);
         }
+
+        $responseDataInspector = new ArrayInspector($response->getData());
+
+        $machine = $this->createMachineModel($responseDataInspector);
+        if (null === $machine) {
+            throw InvalidModelDataException::fromJsonResponse(Machine::class, $response);
+        }
+
+        return $machine;
     }
 
     /**
@@ -66,15 +79,27 @@ class Client
      * @throws InvalidResponseContentException
      * @throws InvalidResponseDataException
      * @throws NonSuccessResponseException
+     * @throws InvalidModelDataException
      */
-    public function getMachine(string $userToken, string $machineId): ?Machine
+    public function getMachine(string $userToken, string $machineId): Machine
     {
-        $responseData = $this->serviceClient->sendRequestForJsonEncodedData(
+        $response = $this->serviceClient->sendRequestForJsonEncodedData(
             (new Request('GET', $this->createUrl('/machine/' . $machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
         );
 
-        return $this->objectFactory->createMachineFromArray($responseData);
+        if (!$response->isSuccessful()) {
+            throw new NonSuccessResponseException($response->getHttpResponse());
+        }
+
+        $responseDataInspector = new ArrayInspector($response->getData());
+
+        $machine = $this->createMachineModel($responseDataInspector);
+        if (null === $machine) {
+            throw InvalidModelDataException::fromJsonResponse(Machine::class, $response);
+        }
+
+        return $machine;
     }
 
     /**
@@ -85,15 +110,56 @@ class Client
      * @throws InvalidResponseContentException
      * @throws InvalidResponseDataException
      * @throws NonSuccessResponseException
+     * @throws InvalidModelDataException
      */
     public function deleteMachine(string $userToken, string $machineId): ?Machine
     {
-        $responseData = $this->serviceClient->sendRequestForJsonEncodedData(
+        $response = $this->serviceClient->sendRequestForJsonEncodedData(
             (new Request('DELETE', $this->createUrl('/machine/' . $machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
         );
 
-        return $this->objectFactory->createMachineFromArray($responseData);
+        if (!$response->isSuccessful()) {
+            throw new NonSuccessResponseException($response->getHttpResponse());
+        }
+
+        $responseDataInspector = new ArrayInspector($response->getData());
+
+        $machine = $this->createMachineModel($responseDataInspector);
+        if (null === $machine) {
+            throw InvalidModelDataException::fromJsonResponse(Machine::class, $response);
+        }
+
+        return $machine;
+    }
+
+    public function createMachineModel(ArrayInspector $data): ?Machine
+    {
+        $id = $data->getNonEmptyString('id');
+        $state = $data->getNonEmptyString('state');
+
+        $ipAddressesInspector = new ArrayInspector($data->getArray('ip_addresses'));
+        $ipAddresses = [];
+
+        $ipAddressesInspector->each(function (int|string $key, mixed $value) use (&$ipAddresses) {
+            if (is_string($value)) {
+                $value = trim($value);
+
+                if ('' !== $value) {
+                    $ipAddresses[] = $value;
+                }
+            }
+        });
+
+        return null === $id || null === $state ? null : new Machine($id, $state, $ipAddresses);
+    }
+
+    public function createBadCreateMachineResponseModel(ArrayInspector $data): ?BadCreateMachineResponse
+    {
+        $message = $data->getNonEmptyString('message');
+        $code = $data->getInteger('code');
+
+        return null === $message || null === $code ? null : new BadCreateMachineResponse($message, $code);
     }
 
     /**
