@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient\Tests\Functional\Client;
 
 use GuzzleHttp\Psr7\Response;
+use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class GetMachineTest extends AbstractClientTest
 {
@@ -38,5 +39,10 @@ class GetMachineTest extends AbstractClientTest
 
             $this->client->getMachine($userToken, $machineId);
         };
+    }
+
+    protected function getExpectedModelClass(): string
+    {
+        return Machine::class;
     }
 }

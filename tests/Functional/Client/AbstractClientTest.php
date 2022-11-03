@@ -9,16 +9,15 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\HttpFactory;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use SmartAssert\ServiceClient\ArrayAccessor;
 use SmartAssert\ServiceClient\Client as ServiceClient;
+use SmartAssert\ServiceClient\Exception\InvalidModelDataException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
-use SmartAssert\ServiceClient\ResponseDecoder;
 use SmartAssert\WorkerManagerClient\Client;
-use SmartAssert\WorkerManagerClient\ObjectFactory;
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\CommonNonSuccessResponseDataProviderTrait;
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\InvalidJsonResponseExceptionDataProviderTrait;
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\NetworkErrorExceptionDataProviderTrait;
@@ -53,12 +52,7 @@ abstract class AbstractClientTest extends TestCase
                 $httpFactory,
                 $httpFactory,
                 new HttpClient(['handler' => $handlerStack]),
-                new ResponseDecoder(),
             ),
-            new ObjectFactory(
-                new ArrayAccessor(),
-            ),
-            new ResponseDecoder(),
         );
     }
 
@@ -95,6 +89,23 @@ abstract class AbstractClientTest extends TestCase
         }
     }
 
+    public function testClientActionThrowsInvalidModelDataException(): void
+    {
+        $responsePayload = ['key' => 'value'];
+        $response = new Response(200, ['content-type' => 'application/json'], (string) json_encode($responsePayload));
+
+        $this->mockHandler->append($response);
+
+        try {
+            ($this->createClientActionCallable())();
+            self::fail(InvalidModelDataException::class . ' not thrown');
+        } catch (InvalidModelDataException $e) {
+            self::assertSame($this->getExpectedModelClass(), $e->class);
+            self::assertSame($response, $e->response);
+            self::assertSame($responsePayload, $e->payload);
+        }
+    }
+
     protected function getLastRequest(): RequestInterface
     {
         $request = $this->httpHistoryContainer->getTransactions()->getRequests()->getLast();
@@ -104,4 +115,9 @@ abstract class AbstractClientTest extends TestCase
     }
 
     abstract protected function createClientActionCallable(): callable;
+
+    /**
+     * @return class-string
+     */
+    abstract protected function getExpectedModelClass(): string;
 }
