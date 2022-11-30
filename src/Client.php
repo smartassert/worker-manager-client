@@ -13,7 +13,7 @@ use SmartAssert\ServiceClient\Exception\InvalidResponseContentException;
 use SmartAssert\ServiceClient\Exception\InvalidResponseDataException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
 use SmartAssert\ServiceClient\Request;
-use SmartAssert\WorkerManagerClient\Model\BadCreateMachineResponse;
+use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class Client
@@ -33,11 +33,12 @@ class Client
      * @throws InvalidResponseDataException
      * @throws NonSuccessResponseException
      * @throws InvalidModelDataException
+     * @throws CreateMachineException
      */
     public function createMachine(
         string $userToken,
         string $machineId
-    ): Machine|BadCreateMachineResponse {
+    ): Machine|CreateMachineException {
         $response = $this->serviceClient->sendRequestForJsonEncodedData(
             (new Request('POST', $this->createUrl('/machine/' . $machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
@@ -51,14 +52,17 @@ class Client
                 && 'application/json' === $httpResponse->getHeaderLine('content-type')
             ) {
                 $responseDataInspector = new ArrayInspector($response->getData());
-                $badRequestResponse = $this->createBadCreateMachineResponseModel($responseDataInspector);
 
-                if ($badRequestResponse instanceof BadCreateMachineResponse) {
-                    return $badRequestResponse;
-                }
+                $message = $responseDataInspector->getString('message');
+                $message = is_string($message) ? $message : '';
+
+                $code = $responseDataInspector->getInteger('code');
+                $code = is_int($code) ? $code : 0;
+
+                throw new CreateMachineException($message, $code);
             }
 
-            throw new NonSuccessResponseException($httpResponse);
+            throw new NonSuccessResponseException($response->getHttpResponse());
         }
 
         $responseDataInspector = new ArrayInspector($response->getData());
@@ -152,14 +156,6 @@ class Client
         });
 
         return null === $id || null === $state ? null : new Machine($id, $state, $ipAddresses);
-    }
-
-    public function createBadCreateMachineResponseModel(ArrayInspector $data): ?BadCreateMachineResponse
-    {
-        $message = $data->getNonEmptyString('message');
-        $code = $data->getInteger('code');
-
-        return null === $message || null === $code ? null : new BadCreateMachineResponse($message, $code);
     }
 
     /**
