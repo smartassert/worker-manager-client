@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 
-use SmartAssert\WorkerManagerClient\Model\BadCreateMachineResponse;
+use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class CreateMachineTest extends AbstractIntegrationTest
@@ -13,13 +13,14 @@ class CreateMachineTest extends AbstractIntegrationTest
     {
         $machineId = md5((string) rand());
 
-        $response = self::$client->createMachine(self::$user1ApiToken->token, $machineId);
-        if ($response instanceof Machine) {
-            $response = self::$client->createMachine(self::$user1ApiToken->token, $machineId);
+        try {
+            self::$client->createMachine(self::$user1ApiToken->token, $machineId);
+            self::$client->createMachine(self::$user1ApiToken->token, $machineId);
+            self::fail(CreateMachineException::class . ' not thrown');
+        } catch (CreateMachineException $e) {
+            self::assertSame('id taken', $e->getMessage());
+            self::assertSame(100, $e->getCode());
         }
-
-        self::assertInstanceOf(BadCreateMachineResponse::class, $response);
-        self::assertSame(100, $response->code);
     }
 
     public function testCreateSuccess(): void
