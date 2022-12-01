@@ -38,7 +38,7 @@ class Client
     public function createMachine(
         string $userToken,
         string $machineId
-    ): Machine|CreateMachineException {
+    ): Machine {
         $response = $this->serviceClient->sendRequestForJsonEncodedData(
             (new Request('POST', $this->createUrl('/machine/' . $machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
