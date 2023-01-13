@@ -141,6 +141,8 @@ class Client
     {
         $id = $data->getNonEmptyString('id');
         $state = $data->getNonEmptyString('state');
+        $hasEndState = $data->getBoolean('has_end_state');
+        $hasEndState = is_bool($hasEndState) ? $hasEndState : false;
 
         $ipAddressesInspector = new ArrayInspector($data->getArray('ip_addresses'));
         $ipAddresses = [];
@@ -155,7 +157,7 @@ class Client
             }
         });
 
-        return null === $id || null === $state ? null : new Machine($id, $state, $ipAddresses);
+        return null === $id || null === $state ? null : new Machine($id, $state, $ipAddresses, $hasEndState);
     }
 
     /**
