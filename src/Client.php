@@ -9,10 +9,12 @@ use SmartAssert\ArrayInspector\ArrayInspector;
 use SmartAssert\ServiceClient\Authentication\BearerAuthentication;
 use SmartAssert\ServiceClient\Client as ServiceClient;
 use SmartAssert\ServiceClient\Exception\InvalidModelDataException;
-use SmartAssert\ServiceClient\Exception\InvalidResponseContentException;
 use SmartAssert\ServiceClient\Exception\InvalidResponseDataException;
+use SmartAssert\ServiceClient\Exception\InvalidResponseTypeException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
 use SmartAssert\ServiceClient\Request;
+use SmartAssert\ServiceClient\Response\JsonResponse;
+use SmartAssert\ServiceClient\Response\ResponseInterface;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
@@ -29,17 +31,17 @@ class Client
      * @param non-empty-string $machineId
      *
      * @throws ClientExceptionInterface
-     * @throws InvalidResponseContentException
      * @throws InvalidResponseDataException
      * @throws NonSuccessResponseException
      * @throws InvalidModelDataException
      * @throws CreateMachineException
+     * @throws InvalidResponseTypeException
      */
     public function createMachine(
         string $userToken,
         string $machineId
     ): Machine {
-        $response = $this->serviceClient->sendRequestForJsonEncodedData(
+        $response = $this->serviceClient->sendRequest(
             (new Request('POST', $this->createUrl('/machine/' . $machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
         );
@@ -51,6 +53,10 @@ class Client
                 400 === $httpResponse->getStatusCode()
                 && 'application/json' === $httpResponse->getHeaderLine('content-type')
             ) {
+                if (!$response instanceof JsonResponse) {
+                    throw InvalidResponseTypeException::create($response, JsonResponse::class);
+                }
+
                 $responseDataInspector = new ArrayInspector($response->getData());
 
                 $message = $responseDataInspector->getString('message');
@@ -65,6 +71,10 @@ class Client
             throw new NonSuccessResponseException($response->getHttpResponse());
         }
 
+        if (!$response instanceof JsonResponse) {
+            throw InvalidResponseTypeException::create($response, JsonResponse::class);
+        }
+
         $responseDataInspector = new ArrayInspector($response->getData());
 
         $machine = $this->createMachineModel($responseDataInspector);
@@ -80,21 +90,19 @@ class Client
      * @param non-empty-string $machineId
      *
      * @throws ClientExceptionInterface
-     * @throws InvalidResponseContentException
      * @throws InvalidResponseDataException
      * @throws NonSuccessResponseException
      * @throws InvalidModelDataException
+     * @throws InvalidResponseTypeException
      */
     public function getMachine(string $userToken, string $machineId): Machine
     {
-        $response = $this->serviceClient->sendRequestForJsonEncodedData(
+        $response = $this->serviceClient->sendRequest(
             (new Request('GET', $this->createUrl('/machine/' . $machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
         );
 
-        if (!$response->isSuccessful()) {
-            throw new NonSuccessResponseException($response->getHttpResponse());
-        }
+        $response = $this->verifyJsonResponse($response);
 
         $responseDataInspector = new ArrayInspector($response->getData());
 
@@ -111,21 +119,19 @@ class Client
      * @param non-empty-string $machineId
      *
      * @throws ClientExceptionInterface
-     * @throws InvalidResponseContentException
      * @throws InvalidResponseDataException
      * @throws NonSuccessResponseException
      * @throws InvalidModelDataException
+     * @throws InvalidResponseTypeException
      */
     public function deleteMachine(string $userToken, string $machineId): ?Machine
     {
-        $response = $this->serviceClient->sendRequestForJsonEncodedData(
+        $response = $this->serviceClient->sendRequest(
             (new Request('DELETE', $this->createUrl('/machine/' . $machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
         );
 
-        if (!$response->isSuccessful()) {
-            throw new NonSuccessResponseException($response->getHttpResponse());
-        }
+        $response = $this->verifyJsonResponse($response);
 
         $responseDataInspector = new ArrayInspector($response->getData());
 
@@ -168,5 +174,22 @@ class Client
     private function createUrl(string $path): string
     {
         return rtrim($this->baseUrl, '/') . $path;
+    }
+
+    /**
+     * @throws NonSuccessResponseException
+     * @throws InvalidResponseTypeException
+     */
+    private function verifyJsonResponse(ResponseInterface $response): JsonResponse
+    {
+        if (!$response->isSuccessful()) {
+            throw new NonSuccessResponseException($response->getHttpResponse());
+        }
+
+        if (!$response instanceof JsonResponse) {
+            throw InvalidResponseTypeException::create($response, JsonResponse::class);
+        }
+
+        return $response;
     }
 }
