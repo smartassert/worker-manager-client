@@ -42,7 +42,7 @@ class Client
         string $machineId
     ): Machine {
         $response = $this->serviceClient->sendRequest(
-            (new Request('POST', $this->createUrl('/machine/' . $machineId)))
+            (new Request('POST', $this->createMachineUrl($machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
         );
 
@@ -98,7 +98,7 @@ class Client
     public function getMachine(string $userToken, string $machineId): Machine
     {
         $response = $this->serviceClient->sendRequest(
-            (new Request('GET', $this->createUrl('/machine/' . $machineId)))
+            (new Request('GET', $this->createMachineUrl($machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
         );
 
@@ -127,7 +127,7 @@ class Client
     public function deleteMachine(string $userToken, string $machineId): ?Machine
     {
         $response = $this->serviceClient->sendRequest(
-            (new Request('DELETE', $this->createUrl('/machine/' . $machineId)))
+            (new Request('DELETE', $this->createMachineUrl($machineId)))
                 ->withAuthentication(new BearerAuthentication($userToken))
         );
 
@@ -162,13 +162,13 @@ class Client
     }
 
     /**
-     * @param non-empty-string $path
+     * @param non-empty-string $machineId
      *
      * @return non-empty-string
      */
-    private function createUrl(string $path): string
+    private function createMachineUrl(string $machineId): string
     {
-        return rtrim($this->baseUrl, '/') . $path;
+        return rtrim($this->baseUrl, '/') . '/machine/' . $machineId;
     }
 
     /**
