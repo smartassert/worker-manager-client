@@ -6,13 +6,11 @@ namespace SmartAssert\WorkerManagerClient;
 
 use Psr\Http\Client\ClientExceptionInterface;
 use SmartAssert\ArrayInspector\ArrayInspector;
-use SmartAssert\ServiceClient\Authentication\BearerAuthentication;
 use SmartAssert\ServiceClient\Client as ServiceClient;
 use SmartAssert\ServiceClient\Exception\InvalidModelDataException;
 use SmartAssert\ServiceClient\Exception\InvalidResponseDataException;
 use SmartAssert\ServiceClient\Exception\InvalidResponseTypeException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
-use SmartAssert\ServiceClient\Request;
 use SmartAssert\ServiceClient\Response\JsonResponse;
 use SmartAssert\ServiceClient\Response\ResponseInterface;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
@@ -21,8 +19,8 @@ use SmartAssert\WorkerManagerClient\Model\Machine;
 class Client
 {
     public function __construct(
-        private readonly string $baseUrl,
         private readonly ServiceClient $serviceClient,
+        private readonly RequestFactory $requestFactory,
     ) {
     }
 
@@ -37,13 +35,10 @@ class Client
      * @throws CreateMachineException
      * @throws InvalidResponseTypeException
      */
-    public function createMachine(
-        string $userToken,
-        string $machineId
-    ): Machine {
+    public function createMachine(string $userToken, string $machineId): Machine
+    {
         $response = $this->serviceClient->sendRequest(
-            (new Request('POST', $this->createMachineUrl($machineId)))
-                ->withAuthentication(new BearerAuthentication($userToken))
+            $this->requestFactory->createMachineRequest($userToken, 'POST', $machineId)
         );
 
         if (!$response->isSuccessful()) {
@@ -98,8 +93,7 @@ class Client
     public function getMachine(string $userToken, string $machineId): Machine
     {
         $response = $this->serviceClient->sendRequest(
-            (new Request('GET', $this->createMachineUrl($machineId)))
-                ->withAuthentication(new BearerAuthentication($userToken))
+            $this->requestFactory->createMachineRequest($userToken, 'GET', $machineId)
         );
 
         $response = $this->verifyJsonResponse($response);
@@ -127,8 +121,7 @@ class Client
     public function deleteMachine(string $userToken, string $machineId): ?Machine
     {
         $response = $this->serviceClient->sendRequest(
-            (new Request('DELETE', $this->createMachineUrl($machineId)))
-                ->withAuthentication(new BearerAuthentication($userToken))
+            $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId)
         );
 
         $response = $this->verifyJsonResponse($response);
@@ -159,16 +152,6 @@ class Client
         $ipAddresses = $data->getNonEmptyStringArray('ip_addresses');
 
         return new Machine($id, $state, $ipAddresses, $hasEndState, $hasActiveState);
-    }
-
-    /**
-     * @param non-empty-string $machineId
-     *
-     * @return non-empty-string
-     */
-    private function createMachineUrl(string $machineId): string
-    {
-        return rtrim($this->baseUrl, '/') . '/machine/' . $machineId;
     }
 
     /**
