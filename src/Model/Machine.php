@@ -15,6 +15,7 @@ class Machine
         public readonly string $state,
         public readonly array $ipAddresses,
         public readonly bool $hasEndState,
+        public readonly bool $hasActiveState,
     ) {
     }
 }
