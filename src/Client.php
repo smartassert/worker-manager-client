@@ -179,7 +179,7 @@ class Client
      */
     private function createMachineUrl(string $machineId): string
     {
-        return rtrim($this->baseUrl, '/') . $machineId;
+        return rtrim($this->baseUrl, '/') . '/machine/' . $machineId;
     }
 
     /**
