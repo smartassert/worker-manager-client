@@ -147,27 +147,16 @@ class Client
     {
         $id = $data->getNonEmptyString('id');
         $state = $data->getNonEmptyString('state');
-        $hasEndState = $data->getBoolean('has_end_state');
-        $hasEndState = is_bool($hasEndState) ? $hasEndState : false;
-        $hasActiveState = $data->getBoolean('has_end_state');
-        $hasActiveState = is_bool($hasActiveState) ? $hasActiveState : false;
-
-        $ipAddressesInspector = new ArrayInspector($data->getArray('ip_addresses'));
-        $ipAddresses = [];
-
-        $ipAddressesInspector->each(function (int|string $key, mixed $value) use (&$ipAddresses) {
-            if (is_string($value)) {
-                $value = trim($value);
-
-                if ('' !== $value) {
-                    $ipAddresses[] = $value;
-                }
-            }
-        });
 
         if (null === $id || null === $state) {
             return null;
         }
+
+        $hasEndState = $data->getBoolean('has_end_state');
+        $hasEndState = is_bool($hasEndState) ? $hasEndState : false;
+        $hasActiveState = $data->getBoolean('has_end_state');
+        $hasActiveState = is_bool($hasActiveState) ? $hasActiveState : false;
+        $ipAddresses = $data->getNonEmptyStringArray('ip_addresses');
 
         return new Machine($id, $state, $ipAddresses, $hasEndState, $hasActiveState);
     }
