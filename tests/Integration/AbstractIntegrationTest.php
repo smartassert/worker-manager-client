@@ -15,6 +15,7 @@ use SmartAssert\UsersClient\Model\Token;
 use SmartAssert\UsersClient\Model\User;
 use SmartAssert\WorkerManagerClient\Client;
 use SmartAssert\WorkerManagerClient\Model\Machine;
+use SmartAssert\WorkerManagerClient\RequestFactory;
 
 abstract class AbstractIntegrationTest extends TestCase
 {
@@ -29,8 +30,8 @@ abstract class AbstractIntegrationTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         self::$client = new Client(
-            'http://localhost:9081',
             self::createServiceClient(),
+            new RequestFactory('http://localhost:9081'),
         );
         self::$user1ApiToken = self::createUserApiToken(self::USER1_EMAIL, self::USER1_PASSWORD);
     }

@@ -19,6 +19,7 @@ use SmartAssert\ServiceClient\Exception\InvalidModelDataException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
 use SmartAssert\ServiceClient\ResponseFactory\ResponseFactory;
 use SmartAssert\WorkerManagerClient\Client;
+use SmartAssert\WorkerManagerClient\RequestFactory;
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\CommonNonSuccessResponseDataProviderTrait;
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\InvalidJsonResponseExceptionDataProviderTrait;
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\NetworkErrorExceptionDataProviderTrait;
@@ -48,13 +49,13 @@ abstract class AbstractClientTest extends TestCase
         $handlerStack->push(Middleware::history($this->httpHistoryContainer));
 
         $this->client = new Client(
-            'https://users.example.com',
             new ServiceClient(
                 $httpFactory,
                 $httpFactory,
                 new HttpClient(['handler' => $handlerStack]),
                 ResponseFactory::createFactory(),
             ),
+            new RequestFactory('https://users.example.com'),
         );
     }
 
