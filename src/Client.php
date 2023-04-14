@@ -145,13 +145,15 @@ class Client
             return null;
         }
 
+        $hasPreActiveState = $data->getBoolean('has_pre_active_state');
+        $hasPreActiveState = is_bool($hasPreActiveState) ? $hasPreActiveState : false;
         $hasEndState = $data->getBoolean('has_end_state');
         $hasEndState = is_bool($hasEndState) ? $hasEndState : false;
         $hasActiveState = $data->getBoolean('has_end_state');
         $hasActiveState = is_bool($hasActiveState) ? $hasActiveState : false;
         $ipAddresses = $data->getNonEmptyStringArray('ip_addresses');
 
-        return new Machine($id, $state, $ipAddresses, $hasEndState, $hasActiveState);
+        return new Machine($id, $state, $ipAddresses, $hasPreActiveState, $hasEndState, $hasActiveState);
     }
 
     /**
