@@ -19,7 +19,8 @@ class DeleteMachineTest extends AbstractClientTest
             ['content-type' => 'application/json'],
             (string) json_encode([
                 'id' => $machineId,
-                'state' => 'create/requested',
+                'state' => 'delete/requested',
+                'state_category' => 'ending',
                 'ip_addresses' => [],
             ])
         ));

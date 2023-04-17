@@ -13,10 +13,8 @@ class Machine
     public function __construct(
         public readonly string $id,
         public readonly string $state,
+        public readonly string $stateCategory,
         public readonly array $ipAddresses,
-        public readonly bool $hasPreActiveState,
-        public readonly bool $hasEndState,
-        public readonly bool $hasActiveState,
     ) {
     }
 }
