@@ -20,6 +20,7 @@ class CreateMachineTest extends AbstractClientTest
             (string) json_encode([
                 'id' => $machineId,
                 'state' => 'create/requested',
+                'state_category' => 'pre_active',
                 'ip_addresses' => [],
             ])
         ));

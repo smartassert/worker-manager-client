@@ -19,7 +19,8 @@ class GetMachineTest extends AbstractClientTest
             ['content-type' => 'application/json'],
             (string) json_encode([
                 'id' => $machineId,
-                'state' => 'create/requested',
+                'state' => 'up/active',
+                'state_category' => 'active',
                 'ip_addresses' => [],
             ])
         ));
