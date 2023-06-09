@@ -17,6 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use SmartAssert\ServiceClient\Client as ServiceClient;
 use SmartAssert\ServiceClient\Exception\InvalidModelDataException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
+use SmartAssert\ServiceClient\ExceptionFactory\CurlExceptionFactory;
 use SmartAssert\ServiceClient\ResponseFactory\ResponseFactory;
 use SmartAssert\WorkerManagerClient\Client;
 use SmartAssert\WorkerManagerClient\RequestFactory;
@@ -54,6 +55,7 @@ abstract class AbstractClientTest extends TestCase
                 $httpFactory,
                 new HttpClient(['handler' => $handlerStack]),
                 ResponseFactory::createFactory(),
+                new CurlExceptionFactory(),
             ),
             new RequestFactory('https://users.example.com'),
         );
