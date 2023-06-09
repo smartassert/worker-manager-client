@@ -94,7 +94,7 @@ abstract class AbstractIntegrationTest extends TestCase
             $httpFactory,
             new HttpClient(),
             ResponseFactory::createFactory(),
-            new CurlExceptionFactory,
+            new CurlExceptionFactory(),
         );
     }
 }

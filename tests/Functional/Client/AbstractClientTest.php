@@ -55,7 +55,7 @@ abstract class AbstractClientTest extends TestCase
                 $httpFactory,
                 new HttpClient(['handler' => $handlerStack]),
                 ResponseFactory::createFactory(),
-                new CurlExceptionFactory,
+                new CurlExceptionFactory(),
             ),
             new RequestFactory('https://users.example.com'),
         );
