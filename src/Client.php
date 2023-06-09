@@ -118,7 +118,7 @@ class Client
      * @throws InvalidModelDataException
      * @throws InvalidResponseTypeException
      */
-    public function deleteMachine(string $userToken, string $machineId): ?Machine
+    public function deleteMachine(string $userToken, string $machineId): Machine
     {
         $response = $this->serviceClient->sendRequest(
             $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId)
