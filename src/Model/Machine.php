@@ -8,6 +8,8 @@ class Machine
 {
     /**
      * @param non-empty-string   $id
+     * @param non-empty-string   $state
+     * @param non-empty-string   $stateCategory
      * @param non-empty-string[] $ipAddresses
      */
     public function __construct(
