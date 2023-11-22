@@ -6,7 +6,7 @@ namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
-class GetMachineTest extends AbstractIntegrationTest
+class GetMachineTest extends AbstractIntegrationTestCase
 {
     public function testGetSuccess(): void
     {
