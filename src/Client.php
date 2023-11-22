@@ -16,11 +16,11 @@ use SmartAssert\ServiceClient\Response\ResponseInterface;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
-class Client
+readonly class Client
 {
     public function __construct(
-        private readonly ServiceClient $serviceClient,
-        private readonly RequestFactory $requestFactory,
+        private ServiceClient $serviceClient,
+        private RequestFactory $requestFactory,
     ) {
     }
 
