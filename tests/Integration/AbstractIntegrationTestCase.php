@@ -44,17 +44,17 @@ abstract class AbstractIntegrationTestCase extends TestCase
         $frontendToken = $usersClient->createFrontendToken($email, $password);
         \assert($frontendToken instanceof Token);
 
-        $frontendTokenUser = $usersClient->verifyFrontendToken($frontendToken);
+        $frontendTokenUser = $usersClient->verifyFrontendToken($frontendToken->token);
         \assert($frontendTokenUser instanceof User);
 
-        $apiKeys = $usersClient->listUserApiKeys($frontendToken);
+        $apiKeys = $usersClient->listUserApiKeys($frontendToken->token);
         $defaultApiKey = $apiKeys->getDefault();
         \assert($defaultApiKey instanceof ApiKey);
 
         $apiToken = $usersClient->createApiToken($defaultApiKey->key);
         \assert($apiToken instanceof Token);
 
-        $apiTokenUser = $usersClient->verifyApiToken($apiToken);
+        $apiTokenUser = $usersClient->verifyApiToken($apiToken->token);
         \assert($apiTokenUser instanceof User);
 
         return $apiToken;
