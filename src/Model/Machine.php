@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SmartAssert\WorkerManagerClient\Model;
 
-class Machine
+readonly class Machine
 {
     /**
      * @param non-empty-string   $id
@@ -13,10 +13,10 @@ class Machine
      * @param non-empty-string[] $ipAddresses
      */
     public function __construct(
-        public readonly string $id,
-        public readonly string $state,
-        public readonly string $stateCategory,
-        public readonly array $ipAddresses,
+        public string $id,
+        public string $state,
+        public string $stateCategory,
+        public array $ipAddresses,
     ) {
     }
 }
