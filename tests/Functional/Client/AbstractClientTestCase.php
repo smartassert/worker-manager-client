@@ -26,7 +26,7 @@ use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\InvalidJsonRes
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\NetworkErrorExceptionDataProviderTrait;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
-abstract class AbstractClientTest extends TestCase
+abstract class AbstractClientTestCase extends TestCase
 {
     use CommonNonSuccessResponseDataProviderTrait;
     use InvalidJsonResponseExceptionDataProviderTrait;

@@ -7,7 +7,7 @@ namespace SmartAssert\WorkerManagerClient\Tests\Functional\Client;
 use GuzzleHttp\Psr7\Response;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
-class CreateMachineTest extends AbstractClientTest
+class CreateMachineTest extends AbstractClientTestCase
 {
     public function testCreateMachineRequestProperties(): void
     {

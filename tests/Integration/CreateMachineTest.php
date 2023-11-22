@@ -7,7 +7,7 @@ namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
-class CreateMachineTest extends AbstractIntegrationTest
+class CreateMachineTest extends AbstractIntegrationTestCase
 {
     public function testCreateBadRequestIdTaken(): void
     {

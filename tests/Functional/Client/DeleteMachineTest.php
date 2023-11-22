@@ -7,7 +7,7 @@ namespace SmartAssert\WorkerManagerClient\Tests\Functional\Client;
 use GuzzleHttp\Psr7\Response;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
-class DeleteMachineTest extends AbstractClientTest
+class DeleteMachineTest extends AbstractClientTestCase
 {
     public function testDeleteMachineRequestProperties(): void
     {

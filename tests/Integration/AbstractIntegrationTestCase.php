@@ -18,7 +18,7 @@ use SmartAssert\WorkerManagerClient\Client;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 use SmartAssert\WorkerManagerClient\RequestFactory;
 
-abstract class AbstractIntegrationTest extends TestCase
+abstract class AbstractIntegrationTestCase extends TestCase
 {
     protected const USER1_EMAIL = 'user1@example.com';
     protected const USER1_PASSWORD = 'password';
