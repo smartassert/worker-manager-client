@@ -13,7 +13,6 @@ use SmartAssert\ServiceClient\Exception\InvalidResponseTypeException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
 use SmartAssert\ServiceClient\Exception\UnauthorizedException;
 use SmartAssert\ServiceClient\Response\JsonResponse;
-use SmartAssert\ServiceClient\Response\ResponseInterface;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
@@ -40,7 +39,7 @@ readonly class Client
     public function createMachine(string $userToken, string $machineId): Machine
     {
         try {
-            $response = $this->serviceClient->sendRequest(
+            $response = $this->serviceClient->sendRequestForJson(
                 $this->requestFactory->createMachineRequest($userToken, 'POST', $machineId)
             );
         } catch (NonSuccessResponseException $e) {
@@ -59,10 +58,6 @@ readonly class Client
             }
 
             throw $e;
-        }
-
-        if (!$response instanceof JsonResponse) {
-            throw InvalidResponseTypeException::create($response, JsonResponse::class);
         }
 
         $responseDataInspector = new ArrayInspector($response->getData());
@@ -88,11 +83,9 @@ readonly class Client
      */
     public function getMachine(string $userToken, string $machineId): Machine
     {
-        $response = $this->serviceClient->sendRequest(
+        $response = $this->serviceClient->sendRequestForJson(
             $this->requestFactory->createMachineRequest($userToken, 'GET', $machineId)
         );
-
-        $response = $this->verifyJsonResponse($response);
 
         $responseDataInspector = new ArrayInspector($response->getData());
 
@@ -117,11 +110,9 @@ readonly class Client
      */
     public function deleteMachine(string $userToken, string $machineId): Machine
     {
-        $response = $this->serviceClient->sendRequest(
+        $response = $this->serviceClient->sendRequestForJson(
             $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId)
         );
-
-        $response = $this->verifyJsonResponse($response);
 
         $responseDataInspector = new ArrayInspector($response->getData());
 
@@ -146,17 +137,5 @@ readonly class Client
         $ipAddresses = $data->getNonEmptyStringArray('ip_addresses');
 
         return new Machine($id, $state, $stateCategory, $ipAddresses);
-    }
-
-    /**
-     * @throws InvalidResponseTypeException
-     */
-    private function verifyJsonResponse(ResponseInterface $response): JsonResponse
-    {
-        if (!$response instanceof JsonResponse) {
-            throw InvalidResponseTypeException::create($response, JsonResponse::class);
-        }
-
-        return $response;
     }
 }
