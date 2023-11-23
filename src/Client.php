@@ -11,6 +11,7 @@ use SmartAssert\ServiceClient\Exception\InvalidModelDataException;
 use SmartAssert\ServiceClient\Exception\InvalidResponseDataException;
 use SmartAssert\ServiceClient\Exception\InvalidResponseTypeException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
+use SmartAssert\ServiceClient\Exception\UnauthorizedException;
 use SmartAssert\ServiceClient\Response\JsonResponse;
 use SmartAssert\ServiceClient\Response\ResponseInterface;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
@@ -34,24 +35,18 @@ readonly class Client
      * @throws InvalidModelDataException
      * @throws CreateMachineException
      * @throws InvalidResponseTypeException
+     * @throws UnauthorizedException
      */
     public function createMachine(string $userToken, string $machineId): Machine
     {
-        $response = $this->serviceClient->sendRequest(
-            $this->requestFactory->createMachineRequest($userToken, 'POST', $machineId)
-        );
+        try {
+            $response = $this->serviceClient->sendRequest(
+                $this->requestFactory->createMachineRequest($userToken, 'POST', $machineId)
+            );
+        } catch (NonSuccessResponseException $e) {
+            $response = $e->getResponse();
 
-        if (!$response->isSuccessful()) {
-            $httpResponse = $response->getHttpResponse();
-
-            if (
-                400 === $httpResponse->getStatusCode()
-                && 'application/json' === $httpResponse->getHeaderLine('content-type')
-            ) {
-                if (!$response instanceof JsonResponse) {
-                    throw InvalidResponseTypeException::create($response, JsonResponse::class);
-                }
-
+            if (400 === $e->getStatusCode() && $response instanceof JsonResponse) {
                 $responseDataInspector = new ArrayInspector($response->getData());
 
                 $message = $responseDataInspector->getString('message');
@@ -63,7 +58,7 @@ readonly class Client
                 throw new CreateMachineException($message, $code);
             }
 
-            throw new NonSuccessResponseException($response->getHttpResponse());
+            throw $e;
         }
 
         if (!$response instanceof JsonResponse) {
@@ -89,6 +84,7 @@ readonly class Client
      * @throws NonSuccessResponseException
      * @throws InvalidModelDataException
      * @throws InvalidResponseTypeException
+     * @throws UnauthorizedException
      */
     public function getMachine(string $userToken, string $machineId): Machine
     {
@@ -117,6 +113,7 @@ readonly class Client
      * @throws NonSuccessResponseException
      * @throws InvalidModelDataException
      * @throws InvalidResponseTypeException
+     * @throws UnauthorizedException
      */
     public function deleteMachine(string $userToken, string $machineId): Machine
     {
@@ -152,15 +149,10 @@ readonly class Client
     }
 
     /**
-     * @throws NonSuccessResponseException
      * @throws InvalidResponseTypeException
      */
     private function verifyJsonResponse(ResponseInterface $response): JsonResponse
     {
-        if (!$response->isSuccessful()) {
-            throw new NonSuccessResponseException($response->getHttpResponse());
-        }
-
         if (!$response instanceof JsonResponse) {
             throw InvalidResponseTypeException::create($response, JsonResponse::class);
         }
