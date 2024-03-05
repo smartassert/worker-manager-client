@@ -10,10 +10,9 @@ use PHPUnit\Framework\TestCase;
 use SmartAssert\ServiceClient\Client as ServiceClient;
 use SmartAssert\ServiceClient\ExceptionFactory\CurlExceptionFactory;
 use SmartAssert\ServiceClient\ResponseFactory\ResponseFactory;
-use SmartAssert\UsersClient\Client as UsersClient;
-use SmartAssert\UsersClient\Model\ApiKey;
-use SmartAssert\UsersClient\Model\Token;
-use SmartAssert\UsersClient\Model\User;
+use SmartAssert\TestAuthenticationProviderBundle\ApiKeyProvider;
+use SmartAssert\TestAuthenticationProviderBundle\ApiTokenProvider;
+use SmartAssert\TestAuthenticationProviderBundle\FrontendTokenProvider;
 use SmartAssert\WorkerManagerClient\Client;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 use SmartAssert\WorkerManagerClient\RequestFactory;
@@ -22,11 +21,15 @@ abstract class AbstractIntegrationTestCase extends TestCase
 {
     protected const USER1_EMAIL = 'user1@example.com';
     protected const USER1_PASSWORD = 'password';
-    protected const USER2_EMAIL = 'user1@example.com';
+    protected const USER2_EMAIL = 'user2@example.com';
     protected const USER2_PASSWORD = 'password';
 
     protected static Client $client;
-    protected static Token $user1ApiToken;
+
+    /**
+     * @var non-empty-string
+     */
+    protected static string $user1ApiToken;
 
     public static function setUpBeforeClass(): void
     {
@@ -34,30 +37,31 @@ abstract class AbstractIntegrationTestCase extends TestCase
             self::createServiceClient(),
             new RequestFactory('http://localhost:9081'),
         );
-        self::$user1ApiToken = self::createUserApiToken(self::USER1_EMAIL, self::USER1_PASSWORD);
+        self::$user1ApiToken = self::createUserApiToken(self::USER1_EMAIL);
     }
 
-    protected static function createUserApiToken(string $email, string $password): Token
+    /**
+     * @param non-empty-string $email
+     *
+     * @return non-empty-string
+     */
+    protected static function createUserApiToken(string $email): string
     {
-        $usersClient = new UsersClient('http://localhost:9080', self::createServiceClient());
+        $usersBaseUrl = 'http://localhost:9080';
+        $httpClient = new HttpClient();
 
-        $frontendToken = $usersClient->createFrontendToken($email, $password);
-        \assert($frontendToken instanceof Token);
+        $frontendTokenProvider = new FrontendTokenProvider(
+            [
+                self::USER1_EMAIL => self::USER1_PASSWORD,
+                self::USER2_EMAIL => self::USER2_PASSWORD,
+            ],
+            $usersBaseUrl,
+            $httpClient
+        );
+        $apiKeyProvider = new ApiKeyProvider($usersBaseUrl, $httpClient, $frontendTokenProvider);
+        $apiTokenProvider = new ApiTokenProvider($usersBaseUrl, $httpClient, $apiKeyProvider);
 
-        $frontendTokenUser = $usersClient->verifyFrontendToken($frontendToken->token);
-        \assert($frontendTokenUser instanceof User);
-
-        $apiKeys = $usersClient->listUserApiKeys($frontendToken->token);
-        $defaultApiKey = $apiKeys->getDefault();
-        \assert($defaultApiKey instanceof ApiKey);
-
-        $apiToken = $usersClient->createApiToken($defaultApiKey->key);
-        \assert($apiToken instanceof Token);
-
-        $apiTokenUser = $usersClient->verifyApiToken($apiToken->token);
-        \assert($apiTokenUser instanceof User);
-
-        return $apiToken;
+        return $apiTokenProvider->get($email);
     }
 
     protected function waitUntilMachineStateIs(string $expectedState, Machine $machine): Machine
@@ -68,7 +72,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
         while ($expectedState !== $machine->state && $waitTotal < $waitThreshold) {
             $waitTotal += 5;
             sleep(5);
-            $machine = self::$client->getMachine(self::$user1ApiToken->token, $machine->id);
+            $machine = self::$client->getMachine(self::$user1ApiToken, $machine->id);
             self::assertInstanceOf(Machine::class, $machine);
         }
 

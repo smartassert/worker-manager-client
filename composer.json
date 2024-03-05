@@ -26,8 +26,8 @@
             "docker compose -f ./tests/build/docker-compose.yml exec -T users-service php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration"
         ],
         "users-generate-jwt-keys": "docker compose -f ./tests/build/docker-compose.yml exec -T users-service php bin/console lexik:jwt:generate-keypair --overwrite --no-interaction",
-        "users-create-user1": "curl --header 'Authorization: primary_admin_token' --data 'email=user1@example.com&password=password' http://localhost:9080/user/create",
-        "users-create-user2": "curl --header 'Authorization: primary_admin_token' --data 'email=user2@example.com&password=password' http://localhost:9080/user/create",
+        "users-create-user1": "curl --header 'Authorization: primary_admin_token' --data 'identifier=user1@example.com&password=password' http://localhost:9080/create",
+        "users-create-user2": "curl --header 'Authorization: primary_admin_token' --data 'identifier=user2@example.com&password=password' http://localhost:9080/create",
         "users-setup": [
             "@users-db-setup",
             "@users-generate-jwt-keys",
@@ -81,7 +81,7 @@
         "mockery/mockery": "^1.5",
         "phpstan/phpstan-mockery": "^1.1",
         "webignition/http-history-container": "^2.5",
-        "smartassert/users-client": "^13.1"
+        "smartassert/test-authenticaton-provider-bundle": "^5.0"
     },
     "minimum-stability":"dev",
     "prefer-stable":true,
