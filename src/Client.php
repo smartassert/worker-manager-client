@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace SmartAssert\WorkerManagerClient;
 
-use Psr\Http\Client\ClientExceptionInterface;
 use SmartAssert\ArrayInspector\ArrayInspector;
 use SmartAssert\ServiceClient\Client as ServiceClient;
 use SmartAssert\ServiceClient\Exception\InvalidModelDataException;
-use SmartAssert\ServiceClient\Exception\InvalidResponseDataException;
-use SmartAssert\ServiceClient\Exception\InvalidResponseTypeException;
 use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
-use SmartAssert\ServiceClient\Exception\UnauthorizedException;
 use SmartAssert\ServiceClient\Response\JsonResponse;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
-readonly class Client
+readonly class Client implements ClientInterface
 {
     public function __construct(
         private ServiceClient $serviceClient,
@@ -24,18 +20,6 @@ readonly class Client
     ) {
     }
 
-    /**
-     * @param non-empty-string $userToken
-     * @param non-empty-string $machineId
-     *
-     * @throws ClientExceptionInterface
-     * @throws InvalidResponseDataException
-     * @throws NonSuccessResponseException
-     * @throws InvalidModelDataException
-     * @throws CreateMachineException
-     * @throws InvalidResponseTypeException
-     * @throws UnauthorizedException
-     */
     public function createMachine(string $userToken, string $machineId): Machine
     {
         try {
@@ -70,17 +54,6 @@ readonly class Client
         return $machine;
     }
 
-    /**
-     * @param non-empty-string $userToken
-     * @param non-empty-string $machineId
-     *
-     * @throws ClientExceptionInterface
-     * @throws InvalidResponseDataException
-     * @throws NonSuccessResponseException
-     * @throws InvalidModelDataException
-     * @throws InvalidResponseTypeException
-     * @throws UnauthorizedException
-     */
     public function getMachine(string $userToken, string $machineId): Machine
     {
         $response = $this->serviceClient->sendRequestForJson(
@@ -97,17 +70,6 @@ readonly class Client
         return $machine;
     }
 
-    /**
-     * @param non-empty-string $userToken
-     * @param non-empty-string $machineId
-     *
-     * @throws ClientExceptionInterface
-     * @throws InvalidResponseDataException
-     * @throws NonSuccessResponseException
-     * @throws InvalidModelDataException
-     * @throws InvalidResponseTypeException
-     * @throws UnauthorizedException
-     */
     public function deleteMachine(string $userToken, string $machineId): Machine
     {
         $response = $this->serviceClient->sendRequestForJson(
