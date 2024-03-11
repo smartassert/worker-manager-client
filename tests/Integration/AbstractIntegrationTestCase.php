@@ -69,10 +69,10 @@ abstract class AbstractIntegrationTestCase extends TestCase
         $waitTotal = 0;
         $waitThreshold = 120;
 
-        while ($expectedState !== $machine->state && $waitTotal < $waitThreshold) {
+        while ($expectedState !== $machine->getState() && $waitTotal < $waitThreshold) {
             $waitTotal += 5;
             sleep(5);
-            $machine = self::$client->getMachine(self::$user1ApiToken, $machine->id);
+            $machine = self::$client->getMachine(self::$user1ApiToken, $machine->getId());
             self::assertInstanceOf(Machine::class, $machine);
         }
 
@@ -82,7 +82,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
                 $waitTotal,
                 $waitThreshold,
                 $expectedState,
-                $machine->state
+                $machine->getState()
             ));
         }
 
