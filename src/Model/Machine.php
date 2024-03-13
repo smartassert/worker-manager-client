@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SmartAssert\WorkerManagerClient\Model;
 
-readonly class Machine implements MachineInterface
+readonly class Machine
 {
     /**
      * @param non-empty-string   $id
@@ -13,30 +13,10 @@ readonly class Machine implements MachineInterface
      * @param non-empty-string[] $ipAddresses
      */
     public function __construct(
-        private string $id,
-        private string $state,
-        private string $stateCategory,
-        private array $ipAddresses,
+        public string $id,
+        public string $state,
+        public string $stateCategory,
+        public array $ipAddresses,
     ) {
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function getState(): string
-    {
-        return $this->state;
-    }
-
-    public function getStateCategory(): string
-    {
-        return $this->stateCategory;
-    }
-
-    public function getIpAddresses(): array
-    {
-        return $this->ipAddresses;
     }
 }
