@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient;
 
 use Psr\Http\Client\ClientExceptionInterface;
-use SmartAssert\ArrayInspector\ArrayInspector;
 use SmartAssert\ServiceClient\Client as ServiceClient;
 use SmartAssert\ServiceClient\Exception\InvalidModelDataException;
 use SmartAssert\ServiceClient\Exception\InvalidResponseDataException;
@@ -46,12 +45,11 @@ readonly class Client
             $response = $e->getResponse();
 
             if (400 === $e->getStatusCode() && $response instanceof JsonResponse) {
-                $responseDataInspector = new ArrayInspector($response->getData());
-
-                $message = $responseDataInspector->getString('message');
+                $responseData = $response->getData();
+                $message = $responseData['message'] ?? '';
                 $message = is_string($message) ? $message : '';
 
-                $code = $responseDataInspector->getInteger('code');
+                $code = $responseData['code'] ?? 0;
                 $code = is_int($code) ? $code : 0;
 
                 throw new CreateMachineException($message, $code);
@@ -60,9 +58,7 @@ readonly class Client
             throw $e;
         }
 
-        $responseDataInspector = new ArrayInspector($response->getData());
-
-        $machine = $this->createMachineModel($responseDataInspector);
+        $machine = $this->createMachineModel($response->getData());
         if (null === $machine) {
             throw InvalidModelDataException::fromJsonResponse(Machine::class, $response);
         }
@@ -87,9 +83,7 @@ readonly class Client
             $this->requestFactory->createMachineRequest($userToken, 'GET', $machineId)
         );
 
-        $responseDataInspector = new ArrayInspector($response->getData());
-
-        $machine = $this->createMachineModel($responseDataInspector);
+        $machine = $this->createMachineModel($response->getData());
         if (null === $machine) {
             throw InvalidModelDataException::fromJsonResponse(Machine::class, $response);
         }
@@ -114,9 +108,7 @@ readonly class Client
             $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId)
         );
 
-        $responseDataInspector = new ArrayInspector($response->getData());
-
-        $machine = $this->createMachineModel($responseDataInspector);
+        $machine = $this->createMachineModel($response->getData());
         if (null === $machine) {
             throw InvalidModelDataException::fromJsonResponse(Machine::class, $response);
         }
@@ -124,18 +116,37 @@ readonly class Client
         return $machine;
     }
 
-    public function createMachineModel(ArrayInspector $data): ?Machine
+    /**
+     * @param array<mixed> $data
+     */
+    public function createMachineModel(array $data): ?Machine
     {
-        $id = $data->getNonEmptyString('id');
-        $state = $data->getNonEmptyString('state');
-        $stateCategory = $data->getNonEmptyString('state_category');
+        $id = $data['id'] ?? null;
+        $id = is_string($id) ? $id : null;
+        $id = '' === $id ? null : $id;
+
+        $state = $data['state'] ?? null;
+        $state = is_string($state) ? $state : null;
+        $state = '' === $state ? null : $state;
+
+        $stateCategory = $data['state_category'] ?? null;
+        $stateCategory = is_string($stateCategory) ? $stateCategory : null;
+        $stateCategory = '' === $stateCategory ? null : $stateCategory;
 
         if (null === $id || null === $state || null === $stateCategory) {
             return null;
         }
 
-        $ipAddresses = $data->getNonEmptyStringArray('ip_addresses');
+        $ipAddresses = $data['ip_addresses'] ?? [];
+        $ipAddresses = is_array($ipAddresses) ? $ipAddresses : [];
 
-        return new Machine($id, $state, $stateCategory, $ipAddresses);
+        $filteredIpAddresses = [];
+        foreach ($ipAddresses as $ipAddress) {
+            if (is_string($ipAddress) && '' !== $ipAddress) {
+                $filteredIpAddresses[] = $ipAddress;
+            }
+        }
+
+        return new Machine($id, $state, $stateCategory, $filteredIpAddresses);
     }
 }
