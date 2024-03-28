@@ -7,9 +7,6 @@ namespace SmartAssert\WorkerManagerClient\Model;
 readonly class ActionFailure
 {
     /**
-     * @param non-empty-string $action
-     * @param non-empty-string $reason
-     *
      * @param array<string, int|string> $context
      */
     public function __construct(

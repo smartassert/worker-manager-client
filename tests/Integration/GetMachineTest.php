@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 
+use SmartAssert\WorkerManagerClient\Model\ActionFailure;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class GetMachineTest extends AbstractIntegrationTestCase
@@ -21,7 +22,16 @@ class GetMachineTest extends AbstractIntegrationTestCase
         self::assertSame($expectedStartState, $machine->state);
 
         $machine = $this->waitUntilMachineStateIs($expectedEndState, $machine);
-
         self::assertSame($expectedEndState, $machine->state);
+
+        self::assertEquals(
+            new ActionFailure(
+                'find',
+                0,
+                'unknown',
+                []
+            ),
+            $machine->actionFailure
+        );
     }
 }
