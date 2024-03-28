@@ -13,6 +13,7 @@ use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
 use SmartAssert\ServiceClient\Exception\UnauthorizedException;
 use SmartAssert\ServiceClient\Response\JsonResponse;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
+use SmartAssert\WorkerManagerClient\Model\ActionFailure;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 
 readonly class Client
@@ -147,6 +148,49 @@ readonly class Client
             }
         }
 
-        return new Machine($id, $state, $stateCategory, $filteredIpAddresses);
+        $actionFailure = null;
+
+        $actionFailureData = $data['action_failure'] ?? null;
+        $actionFailureData = is_array($actionFailureData) ? $actionFailureData : null;
+        if (is_array($actionFailureData)) {
+            $actionFailure = $this->createActionFailureModel($actionFailureData);
+
+            if (null === $actionFailure) {
+                return null;
+            }
+        }
+
+        return new Machine($id, $state, $stateCategory, $filteredIpAddresses, $actionFailure);
+    }
+
+    /**
+     * @param array<mixed> $data
+     */
+    private function createActionFailureModel(array $data): ?ActionFailure
+    {
+        $action = $data['action'] ?? null;
+        $action = is_string($action) ? $action : null;
+
+        $code = $data['code'] ?? null;
+        $code = is_int($code) ? $code : null;
+
+        $reason = $data['reason'] ?? null;
+        $reason = is_string($reason) ? $reason : null;
+
+        if (null === $action || null === $code || null === $reason) {
+            return null;
+        }
+
+        $context = $data['context'] ?? null;
+        $context = is_array($context) ? $context : [];
+
+        $filteredContext = [];
+        foreach ($context as $key => $value) {
+            if (is_string($key) && (is_int($value) || is_string($value))) {
+                $filteredContext[$key] = $value;
+            }
+        }
+
+        return new ActionFailure($action, $code, $reason, $filteredContext);
     }
 }

@@ -17,6 +17,7 @@ readonly class Machine
         public string $state,
         public string $stateCategory,
         public array $ipAddresses,
+        public ?ActionFailure $actionFailure,
     ) {
     }
 }
