@@ -27,8 +27,7 @@ class GetMachineTest extends AbstractIntegrationTestCase
         self::assertEquals(
             new ActionFailure(
                 'find',
-                3,
-                'api authentication failure',
+                'api_authentication_failure',
                 []
             ),
             $machine->actionFailure

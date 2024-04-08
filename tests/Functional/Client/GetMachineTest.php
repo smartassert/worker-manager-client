@@ -69,7 +69,7 @@ class GetMachineTest extends AbstractClientTestCase
 
         $action = md5((string) rand());
         $code = rand();
-        $reason = md5((string) rand());
+        $type = md5((string) rand());
         $context = [
             md5((string) rand()) => md5((string) rand()),
             md5((string) rand()) => rand(),
@@ -104,7 +104,7 @@ class GetMachineTest extends AbstractClientTestCase
                     'action_failure' => [
                         'action' => $action,
                         'code' => $code,
-                        'reason' => $reason,
+                        'type' => $type,
                         'context' => $context,
                     ],
                 ],
@@ -113,7 +113,7 @@ class GetMachineTest extends AbstractClientTestCase
                     $state,
                     $stateCategory,
                     [],
-                    new ActionFailure($action, $code, $reason, $context)
+                    new ActionFailure($action, $type, $context)
                 ),
             ],
         ];
