@@ -171,13 +171,10 @@ readonly class Client
         $action = $data['action'] ?? null;
         $action = is_string($action) ? $action : null;
 
-        $code = $data['code'] ?? null;
-        $code = is_int($code) ? $code : null;
+        $type = $data['type'] ?? null;
+        $type = is_string($type) ? $type : null;
 
-        $reason = $data['reason'] ?? null;
-        $reason = is_string($reason) ? $reason : null;
-
-        if (null === $action || null === $code || null === $reason) {
+        if (null === $action || null === $type) {
             return null;
         }
 
@@ -191,6 +188,6 @@ readonly class Client
             }
         }
 
-        return new ActionFailure($action, $code, $reason, $filteredContext);
+        return new ActionFailure($action, $type, $filteredContext);
     }
 }

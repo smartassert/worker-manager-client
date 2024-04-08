@@ -11,8 +11,7 @@ readonly class ActionFailure
      */
     public function __construct(
         public string $action,
-        public int $code,
-        public string $reason,
+        public string $type,
         public array $context,
     ) {
     }
