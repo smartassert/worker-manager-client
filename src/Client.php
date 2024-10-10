@@ -169,10 +169,12 @@ readonly class Client
     private function createActionFailureModel(array $data): ?ActionFailure
     {
         $action = $data['action'] ?? null;
-        $action = is_string($action) ? $action : null;
+        $action = is_string($action) ? trim($action) : null;
+        $action = '' === $action ? null : $action;
 
         $type = $data['type'] ?? null;
-        $type = is_string($type) ? $type : null;
+        $type = is_string($type) ? trim($type) : null;
+        $type = '' === $type ? null : $type;
 
         if (null === $action || null === $type) {
             return null;
