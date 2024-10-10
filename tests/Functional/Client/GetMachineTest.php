@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient\Tests\Functional\Client;
 
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\DataProvider;
 use SmartAssert\WorkerManagerClient\Model\ActionFailure;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 use Symfony\Component\Uid\Ulid;
@@ -35,10 +36,9 @@ class GetMachineTest extends AbstractClientTestCase
     }
 
     /**
-     * @dataProvider getMachineModelDataProvider
-     *
      * @param array<mixed> $responseData
      */
+    #[DataProvider('getMachineModelDataProvider')]
     public function testGetMachineModel(array $responseData, Machine $expected): void
     {
         $this->mockHandler->append(new Response(
