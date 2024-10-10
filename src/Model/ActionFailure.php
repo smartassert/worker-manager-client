@@ -7,7 +7,7 @@ namespace SmartAssert\WorkerManagerClient\Model;
 readonly class ActionFailure
 {
     /**
-     * @param array<string, int|string> $context
+     * @param array<string, null|int|string> $context
      */
     public function __construct(
         public string $action,
