@@ -27,8 +27,10 @@ class GetMachineTest extends AbstractIntegrationTestCase
         self::assertEquals(
             new ActionFailure(
                 'find',
-                'api_authentication_failure',
-                []
+                'vendor_authentication_failure',
+                [
+                    'provider' => null,
+                ]
             ),
             $machine->actionFailure
         );

@@ -183,7 +183,7 @@ readonly class Client
 
         $filteredContext = [];
         foreach ($context as $key => $value) {
-            if (is_string($key) && (is_int($value) || is_string($value))) {
+            if (is_string($key) && (is_int($value) || is_string($value) || null === $value)) {
                 $filteredContext[$key] = $value;
             }
         }
