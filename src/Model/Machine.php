@@ -18,6 +18,7 @@ readonly class Machine
         public string $stateCategory,
         public array $ipAddresses,
         public ?ActionFailure $actionFailure,
+        public bool $hasFailedState,
     ) {
     }
 }

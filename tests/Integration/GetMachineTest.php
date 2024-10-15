@@ -23,6 +23,7 @@ class GetMachineTest extends AbstractIntegrationTestCase
 
         $machine = $this->waitUntilMachineStateIs($expectedEndState, $machine);
         self::assertSame($expectedEndState, $machine->state);
+        self::assertTrue($machine->hasFailedState);
 
         self::assertEquals(
             new ActionFailure(
