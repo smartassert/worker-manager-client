@@ -25,6 +25,7 @@ class GetMachineTest extends AbstractClientTestCase
                 'state' => 'up/active',
                 'state_category' => 'active',
                 'ip_addresses' => [],
+                'has_failed_state' => false,
             ])
         ));
 
@@ -83,8 +84,9 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => $state,
                     'state_category' => $stateCategory,
                     'ip_addresses' => [],
+                    'has_failed_state' => false,
                 ],
-                'expected' => new Machine($machineId, $state, $stateCategory, [], null),
+                'expected' => new Machine($machineId, $state, $stateCategory, [], null, false),
             ],
             'without action failure, with ip addresses' => [
                 'responseData' => [
@@ -92,8 +94,9 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => $state,
                     'state_category' => $stateCategory,
                     'ip_addresses' => $ipAddresses,
+                    'has_failed_state' => false,
                 ],
-                'expected' => new Machine($machineId, $state, $stateCategory, $ipAddresses, null),
+                'expected' => new Machine($machineId, $state, $stateCategory, $ipAddresses, null, false),
             ],
             'with action failure, without ip addresses' => [
                 'responseData' => [
@@ -107,13 +110,15 @@ class GetMachineTest extends AbstractClientTestCase
                         'type' => $type,
                         'context' => $context,
                     ],
+                    'has_failed_state' => false,
                 ],
                 'expected' => new Machine(
                     $machineId,
                     $state,
                     $stateCategory,
                     [],
-                    new ActionFailure($action, $type, $context)
+                    new ActionFailure($action, $type, $context),
+                    false
                 ),
             ],
         ];

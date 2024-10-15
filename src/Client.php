@@ -125,16 +125,27 @@ readonly class Client
         $id = $data['id'] ?? null;
         $id = is_string($id) ? $id : null;
         $id = '' === $id ? null : $id;
+        if (null === $id) {
+            return null;
+        }
 
         $state = $data['state'] ?? null;
         $state = is_string($state) ? $state : null;
         $state = '' === $state ? null : $state;
+        if (null === $state) {
+            return null;
+        }
 
         $stateCategory = $data['state_category'] ?? null;
         $stateCategory = is_string($stateCategory) ? $stateCategory : null;
         $stateCategory = '' === $stateCategory ? null : $stateCategory;
+        if (null === $stateCategory) {
+            return null;
+        }
 
-        if (null === $id || null === $state || null === $stateCategory) {
+        $hasFailedState = $data['has_failed_state'] ?? null;
+        $hasFailedState = is_bool($hasFailedState) ? $hasFailedState : null;
+        if (null === $hasFailedState) {
             return null;
         }
 
@@ -160,7 +171,7 @@ readonly class Client
             }
         }
 
-        return new Machine($id, $state, $stateCategory, $filteredIpAddresses, $actionFailure);
+        return new Machine($id, $state, $stateCategory, $filteredIpAddresses, $actionFailure, $hasFailedState);
     }
 
     /**
