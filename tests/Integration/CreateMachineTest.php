@@ -30,7 +30,17 @@ class CreateMachineTest extends AbstractIntegrationTestCase
         $response = self::$client->createMachine(self::$user1ApiToken, $machineId);
         self::assertInstanceOf(Machine::class, $response);
         self::assertEquals(
-            new Machine($machineId, 'create/received', 'pre_active', [], null, false),
+            new Machine(
+                id: $machineId,
+                state: 'create/received',
+                stateCategory: 'pre_active',
+                ipAddresses: [],
+                actionFailure: null,
+                hasFailedState: false,
+                hasActiveState: false,
+                hasEndingState: false,
+                hasEndState: false,
+            ),
             $response
         );
     }

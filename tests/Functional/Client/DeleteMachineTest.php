@@ -23,6 +23,9 @@ class DeleteMachineTest extends AbstractClientTestCase
                 'state_category' => 'ending',
                 'ip_addresses' => [],
                 'has_failed_state' => false,
+                'has_active_state' => false,
+                'has_ending_state' => true,
+                'has_end_state' => false,
             ])
         ));
 

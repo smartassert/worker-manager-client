@@ -23,6 +23,9 @@ class CreateMachineTest extends AbstractClientTestCase
                 'state_category' => 'pre_active',
                 'ip_addresses' => [],
                 'has_failed_state' => false,
+                'has_active_state' => false,
+                'has_ending_state' => false,
+                'has_end_state' => false,
             ])
         ));
 

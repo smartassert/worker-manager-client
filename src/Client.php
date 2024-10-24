@@ -149,6 +149,24 @@ readonly class Client
             return null;
         }
 
+        $hasActiveState = $data['has_active_state'] ?? null;
+        $hasActiveState = is_bool($hasActiveState) ? $hasActiveState : null;
+        if (null === $hasActiveState) {
+            return null;
+        }
+
+        $hasEndingState = $data['has_ending_state'] ?? null;
+        $hasEndingState = is_bool($hasEndingState) ? $hasEndingState : null;
+        if (null === $hasEndingState) {
+            return null;
+        }
+
+        $hasEndState = $data['has_end_state'] ?? null;
+        $hasEndState = is_bool($hasEndState) ? $hasEndState : null;
+        if (null === $hasEndState) {
+            return null;
+        }
+
         $ipAddresses = $data['ip_addresses'] ?? [];
         $ipAddresses = is_array($ipAddresses) ? $ipAddresses : [];
 
@@ -171,7 +189,17 @@ readonly class Client
             }
         }
 
-        return new Machine($id, $state, $stateCategory, $filteredIpAddresses, $actionFailure, $hasFailedState);
+        return new Machine(
+            $id,
+            $state,
+            $stateCategory,
+            $filteredIpAddresses,
+            $actionFailure,
+            $hasFailedState,
+            $hasActiveState,
+            $hasEndingState,
+            $hasEndState,
+        );
     }
 
     /**

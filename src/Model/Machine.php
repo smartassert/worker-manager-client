@@ -19,6 +19,9 @@ readonly class Machine
         public array $ipAddresses,
         public ?ActionFailure $actionFailure,
         public bool $hasFailedState,
+        public bool $hasActiveState,
+        public bool $hasEndingState,
+        public bool $hasEndState,
     ) {
     }
 }
