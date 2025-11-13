@@ -28,7 +28,6 @@ class CreateMachineTest extends AbstractIntegrationTestCase
         $machineId = md5((string) rand());
 
         $response = self::$client->createMachine(self::$user1ApiToken, $machineId);
-        self::assertInstanceOf(Machine::class, $response);
         self::assertEquals(
             new Machine(
                 id: $machineId,

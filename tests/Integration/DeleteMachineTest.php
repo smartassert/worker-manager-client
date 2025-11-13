@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 
-use SmartAssert\WorkerManagerClient\Model\Machine;
-
 class DeleteMachineTest extends AbstractIntegrationTestCase
 {
     public function testDeleteSuccess(): void
@@ -16,7 +14,6 @@ class DeleteMachineTest extends AbstractIntegrationTestCase
         $expectedEndState = 'delete/failed';
 
         $machine = self::$client->deleteMachine(self::$user1ApiToken, $machineId);
-        self::assertInstanceOf(Machine::class, $machine);
         self::assertSame($machineId, $machine->id);
         self::assertSame($expectedStartState, $machine->state);
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 
 use SmartAssert\WorkerManagerClient\Model\ActionFailure;
-use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class GetMachineTest extends AbstractIntegrationTestCase
 {
@@ -17,7 +16,6 @@ class GetMachineTest extends AbstractIntegrationTestCase
         $expectedEndState = 'find/not-findable';
 
         $machine = self::$client->getMachine(self::$user1ApiToken, $machineId);
-        self::assertInstanceOf(Machine::class, $machine);
         self::assertSame($machineId, $machine->id);
         self::assertSame($expectedStartState, $machine->state);
 
