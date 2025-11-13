@@ -80,7 +80,7 @@
         "phpunit/phpunit": "^11",
         "smartassert/test-authenticaton-provider-bundle": "^5.0",
         "squizlabs/php_codesniffer": "^4.0",
-        "symfony/uid": "^6.1",
+        "symfony/uid": "^7.3",
         "webignition/http-history-container": "^4.0"
     },
     "minimum-stability":"dev",

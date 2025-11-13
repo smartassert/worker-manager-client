@@ -62,7 +62,6 @@ class GetMachineTest extends AbstractClientTestCase
     public static function getMachineModelDataProvider(): array
     {
         $machineId = (string) new Ulid();
-        \assert('' !== $machineId);
 
         $state = md5((string) rand()) . '/' . md5((string) rand());
         $stateCategory = md5((string) rand());
