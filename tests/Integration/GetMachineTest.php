@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 
 use SmartAssert\WorkerManagerClient\Model\ActionFailure;
-use SmartAssert\WorkerManagerClient\Model\Machine;
 
 class GetMachineTest extends AbstractIntegrationTestCase
 {

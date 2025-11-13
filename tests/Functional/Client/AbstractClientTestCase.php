@@ -7,7 +7,6 @@ namespace SmartAssert\WorkerManagerClient\Tests\Functional\Client;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\DataProvider;

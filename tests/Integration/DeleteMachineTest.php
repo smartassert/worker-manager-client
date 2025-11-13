@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 
-use SmartAssert\WorkerManagerClient\Model\Machine;
-
 class DeleteMachineTest extends AbstractIntegrationTestCase
 {
     public function testDeleteSuccess(): void
