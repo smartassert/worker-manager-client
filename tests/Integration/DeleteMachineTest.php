@@ -16,7 +16,6 @@ class DeleteMachineTest extends AbstractIntegrationTestCase
         $expectedEndState = 'delete/failed';
 
         $machine = self::$client->deleteMachine(self::$user1ApiToken, $machineId);
-        self::assertInstanceOf(Machine::class, $machine);
         self::assertSame($machineId, $machine->id);
         self::assertSame($expectedStartState, $machine->state);
 

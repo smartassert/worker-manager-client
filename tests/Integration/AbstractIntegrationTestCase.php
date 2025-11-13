@@ -73,7 +73,6 @@ abstract class AbstractIntegrationTestCase extends TestCase
             $waitTotal += 5;
             sleep(5);
             $machine = self::$client->getMachine(self::$user1ApiToken, $machine->id);
-            self::assertInstanceOf(Machine::class, $machine);
         }
 
         if ($waitTotal >= $waitThreshold) {

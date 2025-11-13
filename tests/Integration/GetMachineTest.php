@@ -17,7 +17,6 @@ class GetMachineTest extends AbstractIntegrationTestCase
         $expectedEndState = 'find/not-findable';
 
         $machine = self::$client->getMachine(self::$user1ApiToken, $machineId);
-        self::assertInstanceOf(Machine::class, $machine);
         self::assertSame($machineId, $machine->id);
         self::assertSame($expectedStartState, $machine->state);
 

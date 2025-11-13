@@ -26,6 +26,7 @@ use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\CommonNonSucce
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\InvalidJsonResponseExceptionDataProviderTrait;
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\NetworkErrorExceptionDataProviderTrait;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
+use webignition\HttpHistoryContainer\MiddlewareFactory;
 
 abstract class AbstractClientTestCase extends TestCase
 {
@@ -48,7 +49,7 @@ abstract class AbstractClientTestCase extends TestCase
         $handlerStack = HandlerStack::create($this->mockHandler);
 
         $this->httpHistoryContainer = new HttpHistoryContainer();
-        $handlerStack->push(Middleware::history($this->httpHistoryContainer));
+        $handlerStack->push(MiddlewareFactory::create($this->httpHistoryContainer));
 
         $this->client = new Client(
             new ServiceClient(
