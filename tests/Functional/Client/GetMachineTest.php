@@ -26,10 +26,12 @@ class GetMachineTest extends AbstractClientTestCase
                 'state' => 'up/active',
                 'state_category' => 'active',
                 'ip_addresses' => [],
-                'has_failed_state' => false,
                 'has_active_state' => false,
                 'has_ending_state' => false,
-                'has_end_state' => false,
+                'meta_state' => [
+                    'ended' => false,
+                    'succeeded' => false,
+                ],
             ])
         ));
 
@@ -87,10 +89,8 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => $state,
                     'state_category' => $stateCategory,
                     'ip_addresses' => [],
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => false,
                     'meta_state' => [
                         'ended' => false,
                         'succeeded' => false,
@@ -115,10 +115,8 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => $state,
                     'state_category' => $stateCategory,
                     'ip_addresses' => $ipAddresses,
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => false,
                     'meta_state' => [
                         'ended' => false,
                         'succeeded' => false,
@@ -149,10 +147,8 @@ class GetMachineTest extends AbstractClientTestCase
                         'type' => $type,
                         'context' => $context,
                     ],
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => false,
                     'meta_state' => [
                         'ended' => false,
                         'succeeded' => false,
@@ -177,10 +173,8 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => 'find/not-findable',
                     'state_category' => 'end',
                     'ip_addresses' => [],
-                    'has_failed_state' => true,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => true,
                     'meta_state' => [
                         'ended' => true,
                         'succeeded' => false,
@@ -205,10 +199,8 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => 'up/active',
                     'state_category' => 'active',
                     'ip_addresses' => [],
-                    'has_failed_state' => false,
                     'has_active_state' => true,
                     'has_ending_state' => false,
-                    'has_end_state' => false,
                     'meta_state' => [
                         'ended' => false,
                         'succeeded' => false,
@@ -233,10 +225,8 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => 'delete/requested',
                     'state_category' => 'ending',
                     'ip_addresses' => [],
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => true,
-                    'has_end_state' => false,
                     'meta_state' => [
                         'ended' => false,
                         'succeeded' => false,
@@ -261,10 +251,8 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => 'delete/deleted',
                     'state_category' => 'end',
                     'ip_addresses' => [],
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => true,
                     'meta_state' => [
                         'ended' => true,
                         'succeeded' => true,
