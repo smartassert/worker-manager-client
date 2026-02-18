@@ -161,12 +161,6 @@ readonly class Client
             return null;
         }
 
-        $hasEndState = $data['has_end_state'] ?? null;
-        $hasEndState = is_bool($hasEndState) ? $hasEndState : null;
-        if (null === $hasEndState) {
-            return null;
-        }
-
         $ipAddresses = $data['ip_addresses'] ?? [];
         $ipAddresses = is_array($ipAddresses) ? $ipAddresses : [];
 
@@ -207,7 +201,7 @@ readonly class Client
             $hasFailedState,
             $hasActiveState,
             $hasEndingState,
-            $hasEndState,
+            $metaStateEnded,
             new MetaState(
                 $metaStateEnded,
                 $metaStateSucceeded,
