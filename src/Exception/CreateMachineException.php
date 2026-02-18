@@ -4,6 +4,4 @@ declare(strict_types=1);
 
 namespace SmartAssert\WorkerManagerClient\Exception;
 
-class CreateMachineException extends \Exception
-{
-}
+class CreateMachineException extends \Exception {}
