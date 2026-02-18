@@ -15,6 +15,7 @@ use SmartAssert\ServiceClient\Response\JsonResponse;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\ActionFailure;
 use SmartAssert\WorkerManagerClient\Model\Machine;
+use SmartAssert\WorkerManagerClient\Model\MetaState;
 
 readonly class Client
 {
@@ -142,12 +143,6 @@ readonly class Client
             return null;
         }
 
-        $hasFailedState = $data['has_failed_state'] ?? null;
-        $hasFailedState = is_bool($hasFailedState) ? $hasFailedState : null;
-        if (null === $hasFailedState) {
-            return null;
-        }
-
         $hasActiveState = $data['has_active_state'] ?? null;
         $hasActiveState = is_bool($hasActiveState) ? $hasActiveState : null;
         if (null === $hasActiveState) {
@@ -157,12 +152,6 @@ readonly class Client
         $hasEndingState = $data['has_ending_state'] ?? null;
         $hasEndingState = is_bool($hasEndingState) ? $hasEndingState : null;
         if (null === $hasEndingState) {
-            return null;
-        }
-
-        $hasEndState = $data['has_end_state'] ?? null;
-        $hasEndState = is_bool($hasEndState) ? $hasEndState : null;
-        if (null === $hasEndState) {
             return null;
         }
 
@@ -188,16 +177,29 @@ readonly class Client
             }
         }
 
+        $metaState = $data['meta_state'] ?? [];
+        $metaState = is_array($metaState) ? $metaState : [];
+
+        $metaStateEnded = $metaState['ended'] ?? false;
+        $metaStateEnded = is_bool($metaStateEnded) ? $metaStateEnded : false;
+
+        $metaStateSucceeded = $metaState['succeeded'] ?? false;
+        $metaStateSucceeded = is_bool($metaStateSucceeded) ? $metaStateSucceeded : false;
+
         return new Machine(
             $id,
             $state,
             $stateCategory,
             $filteredIpAddresses,
             $actionFailure,
-            $hasFailedState,
+            $metaStateEnded && !$metaStateSucceeded,
             $hasActiveState,
             $hasEndingState,
-            $hasEndState,
+            $metaStateEnded,
+            new MetaState(
+                $metaStateEnded,
+                $metaStateSucceeded,
+            ),
         );
     }
 

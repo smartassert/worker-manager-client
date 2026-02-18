@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\DataProvider;
 use SmartAssert\WorkerManagerClient\Model\ActionFailure;
 use SmartAssert\WorkerManagerClient\Model\Machine;
+use SmartAssert\WorkerManagerClient\Model\MetaState;
 use Symfony\Component\Uid\Ulid;
 
 class GetMachineTest extends AbstractClientTestCase
@@ -25,10 +26,12 @@ class GetMachineTest extends AbstractClientTestCase
                 'state' => 'up/active',
                 'state_category' => 'active',
                 'ip_addresses' => [],
-                'has_failed_state' => false,
                 'has_active_state' => false,
                 'has_ending_state' => false,
-                'has_end_state' => false,
+                'meta_state' => [
+                    'ended' => false,
+                    'succeeded' => false,
+                ],
             ])
         ));
 
@@ -86,10 +89,12 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => $state,
                     'state_category' => $stateCategory,
                     'ip_addresses' => [],
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => false,
+                    'meta_state' => [
+                        'ended' => false,
+                        'succeeded' => false,
+                    ],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -101,6 +106,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: false,
+                    metaState: new MetaState(false, false),
                 ),
             ],
             'without action failure, with ip addresses' => [
@@ -109,10 +115,12 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => $state,
                     'state_category' => $stateCategory,
                     'ip_addresses' => $ipAddresses,
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => false,
+                    'meta_state' => [
+                        'ended' => false,
+                        'succeeded' => false,
+                    ],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -124,6 +132,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: false,
+                    metaState: new MetaState(false, false),
                 ),
             ],
             'with action failure, without ip addresses' => [
@@ -138,10 +147,12 @@ class GetMachineTest extends AbstractClientTestCase
                         'type' => $type,
                         'context' => $context,
                     ],
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => false,
+                    'meta_state' => [
+                        'ended' => false,
+                        'succeeded' => false,
+                    ],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -153,6 +164,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: false,
+                    metaState: new MetaState(false, false),
                 ),
             ],
             'has failed state' => [
@@ -161,10 +173,12 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => 'find/not-findable',
                     'state_category' => 'end',
                     'ip_addresses' => [],
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => true,
+                    'meta_state' => [
+                        'ended' => true,
+                        'succeeded' => false,
+                    ],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -172,10 +186,11 @@ class GetMachineTest extends AbstractClientTestCase
                     stateCategory: 'end',
                     ipAddresses: [],
                     actionFailure: null,
-                    hasFailedState: false,
+                    hasFailedState: true,
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: true,
+                    metaState: new MetaState(true, false),
                 ),
             ],
             'has active state' => [
@@ -184,10 +199,12 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => 'up/active',
                     'state_category' => 'active',
                     'ip_addresses' => [],
-                    'has_failed_state' => false,
                     'has_active_state' => true,
                     'has_ending_state' => false,
-                    'has_end_state' => false,
+                    'meta_state' => [
+                        'ended' => false,
+                        'succeeded' => false,
+                    ],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -199,6 +216,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: true,
                     hasEndingState: false,
                     hasEndState: false,
+                    metaState: new MetaState(false, false),
                 ),
             ],
             'has ending state' => [
@@ -207,10 +225,12 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => 'delete/requested',
                     'state_category' => 'ending',
                     'ip_addresses' => [],
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => true,
-                    'has_end_state' => false,
+                    'meta_state' => [
+                        'ended' => false,
+                        'succeeded' => false,
+                    ],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -222,6 +242,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: true,
                     hasEndState: false,
+                    metaState: new MetaState(false, false),
                 ),
             ],
             'has end state' => [
@@ -230,10 +251,12 @@ class GetMachineTest extends AbstractClientTestCase
                     'state' => 'delete/deleted',
                     'state_category' => 'end',
                     'ip_addresses' => [],
-                    'has_failed_state' => false,
                     'has_active_state' => false,
                     'has_ending_state' => false,
-                    'has_end_state' => true,
+                    'meta_state' => [
+                        'ended' => true,
+                        'succeeded' => true,
+                    ],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -245,6 +268,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: true,
+                    metaState: new MetaState(true, true),
                 ),
             ],
         ];
