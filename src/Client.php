@@ -143,12 +143,6 @@ readonly class Client
             return null;
         }
 
-        $hasFailedState = $data['has_failed_state'] ?? null;
-        $hasFailedState = is_bool($hasFailedState) ? $hasFailedState : null;
-        if (null === $hasFailedState) {
-            return null;
-        }
-
         $hasActiveState = $data['has_active_state'] ?? null;
         $hasActiveState = is_bool($hasActiveState) ? $hasActiveState : null;
         if (null === $hasActiveState) {
@@ -198,7 +192,7 @@ readonly class Client
             $stateCategory,
             $filteredIpAddresses,
             $actionFailure,
-            $hasFailedState,
+            $metaStateEnded && !$metaStateSucceeded,
             $hasActiveState,
             $hasEndingState,
             $metaStateEnded,
