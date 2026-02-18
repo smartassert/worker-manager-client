@@ -15,6 +15,7 @@ use SmartAssert\ServiceClient\Response\JsonResponse;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\ActionFailure;
 use SmartAssert\WorkerManagerClient\Model\Machine;
+use SmartAssert\WorkerManagerClient\Model\MetaState;
 
 readonly class Client
 {
@@ -188,6 +189,15 @@ readonly class Client
             }
         }
 
+        $metaState = $data['meta_state'] ?? [];
+        $metaState = is_array($metaState) ? $metaState : [];
+
+        $metaStateEnded = $metaState['ended'] ?? false;
+        $metaStateEnded = is_bool($metaStateEnded) ? $metaStateEnded : false;
+
+        $metaStateSucceeded = $metaState['succeeded'] ?? false;
+        $metaStateSucceeded = is_bool($metaStateSucceeded) ? $metaStateSucceeded : false;
+
         return new Machine(
             $id,
             $state,
@@ -198,6 +208,10 @@ readonly class Client
             $hasActiveState,
             $hasEndingState,
             $hasEndState,
+            new MetaState(
+                $metaStateEnded,
+                $metaStateSucceeded,
+            ),
         );
     }
 

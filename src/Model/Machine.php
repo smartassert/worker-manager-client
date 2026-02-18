@@ -22,5 +22,6 @@ readonly class Machine
         public bool $hasActiveState,
         public bool $hasEndingState,
         public bool $hasEndState,
+        public MetaState $metaState,
     ) {}
 }

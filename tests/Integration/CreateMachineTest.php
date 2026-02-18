@@ -6,6 +6,7 @@ namespace SmartAssert\WorkerManagerClient\Tests\Integration;
 
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
 use SmartAssert\WorkerManagerClient\Model\Machine;
+use SmartAssert\WorkerManagerClient\Model\MetaState;
 
 class CreateMachineTest extends AbstractIntegrationTestCase
 {
@@ -39,6 +40,7 @@ class CreateMachineTest extends AbstractIntegrationTestCase
                 hasActiveState: false,
                 hasEndingState: false,
                 hasEndState: false,
+                metaState: new MetaState(false, false),
             ),
             $response
         );
