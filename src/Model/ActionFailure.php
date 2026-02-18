@@ -15,6 +15,5 @@ readonly class ActionFailure
         public string $action,
         public string $type,
         public array $context,
-    ) {
-    }
+    ) {}
 }

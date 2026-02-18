@@ -21,8 +21,7 @@ readonly class Client
     public function __construct(
         private ServiceClient $serviceClient,
         private RequestFactory $requestFactory,
-    ) {
-    }
+    ) {}
 
     /**
      * @param non-empty-string $userToken
