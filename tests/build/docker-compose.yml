@@ -31,7 +31,7 @@ services:
       - ./http-config/caddy/Caddyfile:/etc/caddy/Caddyfile
 
   worker-manager-service:
-    image: ghcr.io/smartassert/worker-manager:4.3
+    image: ghcr.io/smartassert/worker-manager:5.0
     container_name: worker-manager-service
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker_manager?serverVersion=12&charset=utf8
@@ -39,6 +39,7 @@ services:
       PRIMARY_DIGITALOCEAN_API_TOKEN: intentionally_invalid_primary_token
       SECONDARY_DIGITALOCEAN_API_TOKEN: intentionally_invalid_secondary_token
       IS_READY: 1
+      WORKER_SSH_KEY_ID: 123456
     depends_on:
       - postgres
 

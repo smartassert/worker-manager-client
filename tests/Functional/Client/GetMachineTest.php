@@ -92,6 +92,7 @@ class GetMachineTest extends AbstractClientTestCase
                     'has_active_state' => false,
                     'has_ending_state' => false,
                     'meta_state' => [
+                        'pending' => true,
                         'ended' => false,
                         'succeeded' => false,
                     ],
@@ -106,7 +107,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: false,
-                    metaState: new MetaState(false, false),
+                    metaState: new MetaState(ended: false, succeeded: false, pending: true),
                 ),
             ],
             'without action failure, with ip addresses' => [
@@ -118,6 +119,7 @@ class GetMachineTest extends AbstractClientTestCase
                     'has_active_state' => false,
                     'has_ending_state' => false,
                     'meta_state' => [
+                        'pending' => false,
                         'ended' => false,
                         'succeeded' => false,
                     ],
@@ -132,7 +134,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: false,
-                    metaState: new MetaState(false, false),
+                    metaState: new MetaState(ended: false, succeeded: false, pending: false),
                 ),
             ],
             'with action failure, without ip addresses' => [
@@ -150,6 +152,7 @@ class GetMachineTest extends AbstractClientTestCase
                     'has_active_state' => false,
                     'has_ending_state' => false,
                     'meta_state' => [
+                        'pending' => false,
                         'ended' => false,
                         'succeeded' => false,
                     ],
@@ -164,7 +167,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: false,
-                    metaState: new MetaState(false, false),
+                    metaState: new MetaState(ended: false, succeeded: false, pending: false),
                 ),
             ],
             'has failed state' => [
@@ -176,6 +179,7 @@ class GetMachineTest extends AbstractClientTestCase
                     'has_active_state' => false,
                     'has_ending_state' => false,
                     'meta_state' => [
+                        'pending' => false,
                         'ended' => true,
                         'succeeded' => false,
                     ],
@@ -190,7 +194,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: true,
-                    metaState: new MetaState(true, false),
+                    metaState: new MetaState(ended: true, succeeded: false, pending: false),
                 ),
             ],
             'has active state' => [
@@ -202,6 +206,7 @@ class GetMachineTest extends AbstractClientTestCase
                     'has_active_state' => true,
                     'has_ending_state' => false,
                     'meta_state' => [
+                        'pending' => false,
                         'ended' => false,
                         'succeeded' => false,
                     ],
@@ -216,7 +221,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: true,
                     hasEndingState: false,
                     hasEndState: false,
-                    metaState: new MetaState(false, false),
+                    metaState: new MetaState(ended: false, succeeded: false, pending: false),
                 ),
             ],
             'has ending state' => [
@@ -228,6 +233,7 @@ class GetMachineTest extends AbstractClientTestCase
                     'has_active_state' => false,
                     'has_ending_state' => true,
                     'meta_state' => [
+                        'pending' => false,
                         'ended' => false,
                         'succeeded' => false,
                     ],
@@ -242,7 +248,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: true,
                     hasEndState: false,
-                    metaState: new MetaState(false, false),
+                    metaState: new MetaState(ended: false, succeeded: false, pending: false),
                 ),
             ],
             'has end state' => [
@@ -254,6 +260,7 @@ class GetMachineTest extends AbstractClientTestCase
                     'has_active_state' => false,
                     'has_ending_state' => false,
                     'meta_state' => [
+                        'pending' => false,
                         'ended' => true,
                         'succeeded' => true,
                     ],
@@ -268,7 +275,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     hasEndState: true,
-                    metaState: new MetaState(true, true),
+                    metaState: new MetaState(ended: true, succeeded: true, pending: false),
                 ),
             ],
         ];

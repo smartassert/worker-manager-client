@@ -28,7 +28,7 @@ class GetMachineTest extends AbstractIntegrationTestCase
                 'find',
                 'vendor_authentication_failure',
                 [
-                    'provider' => null,
+                    'provider' => 'digitalocean',
                 ]
             ),
             $machine->actionFailure
