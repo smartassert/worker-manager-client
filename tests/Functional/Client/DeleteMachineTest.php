@@ -25,6 +25,7 @@ class DeleteMachineTest extends AbstractClientTestCase
                 'has_active_state' => false,
                 'has_ending_state' => true,
                 'meta_state' => [
+                    'pending' => false,
                     'ended' => false,
                     'succeeded' => false,
                 ],

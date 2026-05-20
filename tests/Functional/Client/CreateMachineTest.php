@@ -25,6 +25,7 @@ class CreateMachineTest extends AbstractClientTestCase
                 'has_active_state' => false,
                 'has_ending_state' => false,
                 'meta_state' => [
+                    'pending' => true,
                     'ended' => false,
                     'succeeded' => false,
                 ],

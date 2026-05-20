@@ -186,6 +186,9 @@ readonly class Client
         $metaStateSucceeded = $metaState['succeeded'] ?? false;
         $metaStateSucceeded = is_bool($metaStateSucceeded) ? $metaStateSucceeded : false;
 
+        $metaStatePending = $metaState['pending'] ?? true;
+        $metaStatePending = is_bool($metaStatePending) ? $metaStatePending : true;
+
         return new Machine(
             $id,
             $state,
@@ -199,6 +202,7 @@ readonly class Client
             new MetaState(
                 $metaStateEnded,
                 $metaStateSucceeded,
+                $metaStatePending,
             ),
         );
     }
