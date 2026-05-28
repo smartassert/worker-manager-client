@@ -91,10 +91,8 @@ readonly class MachineFactory
             $stateCategory,
             $filteredIpAddresses,
             $actionFailure,
-            $metaStateEnded && !$metaStateSucceeded,
             $hasActiveState,
             $hasEndingState,
-            $metaStateEnded,
             new MetaState(
                 $metaStateEnded,
                 $metaStateSucceeded,

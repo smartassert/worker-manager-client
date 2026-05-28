@@ -11,4 +11,14 @@ readonly class MetaState
         public bool $succeeded,
         public bool $pending,
     ) {}
+
+    public function hasFailedState(): bool
+    {
+        return $this->ended && !$this->succeeded;
+    }
+
+    public function hasEndState(): bool
+    {
+        return $this->ended;
+    }
 }
