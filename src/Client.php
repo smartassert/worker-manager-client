@@ -13,15 +13,15 @@ use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
 use SmartAssert\ServiceClient\Exception\UnauthorizedException;
 use SmartAssert\ServiceClient\Response\JsonResponse;
 use SmartAssert\WorkerManagerClient\Exception\CreateMachineException;
-use SmartAssert\WorkerManagerClient\Model\ActionFailure;
+use SmartAssert\WorkerManagerClient\Factory\MachineFactory;
 use SmartAssert\WorkerManagerClient\Model\Machine;
-use SmartAssert\WorkerManagerClient\Model\MetaState;
 
 readonly class Client
 {
     public function __construct(
         private ServiceClient $serviceClient,
         private RequestFactory $requestFactory,
+        private MachineFactory $machineFactory,
     ) {}
 
     /**
@@ -59,7 +59,7 @@ readonly class Client
             throw $e;
         }
 
-        $machine = $this->createMachineModel($response->getData());
+        $machine = $this->machineFactory->create($response->getData());
         if (null === $machine) {
             throw InvalidModelDataException::fromJsonResponse(Machine::class, $response);
         }
@@ -84,7 +84,7 @@ readonly class Client
             $this->requestFactory->createMachineRequest($userToken, 'GET', $machineId)
         );
 
-        $machine = $this->createMachineModel($response->getData());
+        $machine = $this->machineFactory->create($response->getData());
         if (null === $machine) {
             throw InvalidModelDataException::fromJsonResponse(Machine::class, $response);
         }
@@ -109,131 +109,11 @@ readonly class Client
             $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId)
         );
 
-        $machine = $this->createMachineModel($response->getData());
+        $machine = $this->machineFactory->create($response->getData());
         if (null === $machine) {
             throw InvalidModelDataException::fromJsonResponse(Machine::class, $response);
         }
 
         return $machine;
-    }
-
-    /**
-     * @param array<mixed> $data
-     */
-    public function createMachineModel(array $data): ?Machine
-    {
-        $id = $data['id'] ?? null;
-        $id = is_string($id) ? $id : null;
-        $id = '' === $id ? null : $id;
-        if (null === $id) {
-            return null;
-        }
-
-        $state = $data['state'] ?? null;
-        $state = is_string($state) ? $state : null;
-        $state = '' === $state ? null : $state;
-        if (null === $state) {
-            return null;
-        }
-
-        $stateCategory = $data['state_category'] ?? null;
-        $stateCategory = is_string($stateCategory) ? $stateCategory : null;
-        $stateCategory = '' === $stateCategory ? null : $stateCategory;
-        if (null === $stateCategory) {
-            return null;
-        }
-
-        $hasActiveState = $data['has_active_state'] ?? null;
-        $hasActiveState = is_bool($hasActiveState) ? $hasActiveState : null;
-        if (null === $hasActiveState) {
-            return null;
-        }
-
-        $hasEndingState = $data['has_ending_state'] ?? null;
-        $hasEndingState = is_bool($hasEndingState) ? $hasEndingState : null;
-        if (null === $hasEndingState) {
-            return null;
-        }
-
-        $ipAddresses = $data['ip_addresses'] ?? [];
-        $ipAddresses = is_array($ipAddresses) ? $ipAddresses : [];
-
-        $filteredIpAddresses = [];
-        foreach ($ipAddresses as $ipAddress) {
-            if (is_string($ipAddress) && '' !== $ipAddress) {
-                $filteredIpAddresses[] = $ipAddress;
-            }
-        }
-
-        $actionFailure = null;
-
-        $actionFailureData = $data['action_failure'] ?? null;
-        $actionFailureData = is_array($actionFailureData) ? $actionFailureData : null;
-        if (is_array($actionFailureData)) {
-            $actionFailure = $this->createActionFailureModel($actionFailureData);
-
-            if (null === $actionFailure) {
-                return null;
-            }
-        }
-
-        $metaState = $data['meta_state'] ?? [];
-        $metaState = is_array($metaState) ? $metaState : [];
-
-        $metaStateEnded = $metaState['ended'] ?? false;
-        $metaStateEnded = is_bool($metaStateEnded) ? $metaStateEnded : false;
-
-        $metaStateSucceeded = $metaState['succeeded'] ?? false;
-        $metaStateSucceeded = is_bool($metaStateSucceeded) ? $metaStateSucceeded : false;
-
-        $metaStatePending = $metaState['pending'] ?? true;
-        $metaStatePending = is_bool($metaStatePending) ? $metaStatePending : true;
-
-        return new Machine(
-            $id,
-            $state,
-            $stateCategory,
-            $filteredIpAddresses,
-            $actionFailure,
-            $metaStateEnded && !$metaStateSucceeded,
-            $hasActiveState,
-            $hasEndingState,
-            $metaStateEnded,
-            new MetaState(
-                $metaStateEnded,
-                $metaStateSucceeded,
-                $metaStatePending,
-            ),
-        );
-    }
-
-    /**
-     * @param array<mixed> $data
-     */
-    private function createActionFailureModel(array $data): ?ActionFailure
-    {
-        $action = $data['action'] ?? null;
-        $action = is_string($action) ? trim($action) : null;
-        $action = '' === $action ? null : $action;
-
-        $type = $data['type'] ?? null;
-        $type = is_string($type) ? trim($type) : null;
-        $type = '' === $type ? null : $type;
-
-        if (null === $action || null === $type) {
-            return null;
-        }
-
-        $context = $data['context'] ?? null;
-        $context = is_array($context) ? $context : [];
-
-        $filteredContext = [];
-        foreach ($context as $key => $value) {
-            if (is_string($key) && (is_int($value) || is_string($value) || null === $value)) {
-                $filteredContext[$key] = $value;
-            }
-        }
-
-        return new ActionFailure($action, $type, $filteredContext);
     }
 }

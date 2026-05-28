@@ -14,6 +14,8 @@ use SmartAssert\TestAuthenticationProviderBundle\ApiKeyProvider;
 use SmartAssert\TestAuthenticationProviderBundle\ApiTokenProvider;
 use SmartAssert\TestAuthenticationProviderBundle\FrontendTokenProvider;
 use SmartAssert\WorkerManagerClient\Client;
+use SmartAssert\WorkerManagerClient\Factory\ActionFailureFactory;
+use SmartAssert\WorkerManagerClient\Factory\MachineFactory;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 use SmartAssert\WorkerManagerClient\RequestFactory;
 
@@ -36,6 +38,9 @@ abstract class AbstractIntegrationTestCase extends TestCase
         self::$client = new Client(
             self::createServiceClient(),
             new RequestFactory('http://localhost:9081'),
+            new MachineFactory(
+                new ActionFailureFactory(),
+            ),
         );
         self::$user1ApiToken = self::createUserApiToken(self::USER1_EMAIL);
     }
