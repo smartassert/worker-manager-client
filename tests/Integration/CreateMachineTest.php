@@ -36,10 +36,8 @@ class CreateMachineTest extends AbstractIntegrationTestCase
                 stateCategory: 'pre_active',
                 ipAddresses: [],
                 actionFailure: null,
-                hasFailedState: false,
                 hasActiveState: false,
                 hasEndingState: false,
-                hasEndState: false,
                 metaState: new MetaState(ended: false, succeeded: false, pending: true),
             ),
             $response
