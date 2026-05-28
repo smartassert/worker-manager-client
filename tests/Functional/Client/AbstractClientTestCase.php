@@ -20,6 +20,8 @@ use SmartAssert\ServiceClient\Exception\NonSuccessResponseException;
 use SmartAssert\ServiceClient\ExceptionFactory\CurlExceptionFactory;
 use SmartAssert\ServiceClient\ResponseFactory\ResponseFactory;
 use SmartAssert\WorkerManagerClient\Client;
+use SmartAssert\WorkerManagerClient\Factory\ActionFailureFactory;
+use SmartAssert\WorkerManagerClient\Factory\MachineFactory;
 use SmartAssert\WorkerManagerClient\RequestFactory;
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\CommonNonSuccessResponseDataProviderTrait;
 use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\InvalidJsonResponseExceptionDataProviderTrait;
@@ -59,6 +61,9 @@ abstract class AbstractClientTestCase extends TestCase
                 new CurlExceptionFactory(),
             ),
             new RequestFactory('https://users.example.com'),
+            new MachineFactory(
+                new ActionFailureFactory(),
+            ),
         );
     }
 
