@@ -42,10 +42,15 @@ readonly class Client
         string $machineId,
         ?string $notifyUrl = null,
     ): Machine {
+        $payload = [];
+        if (null !== $notifyUrl) {
+            $payload['notify_url'] = $notifyUrl;
+        }
+
+        $request = $this->requestFactory->createMachineRequest($userToken, 'POST', $machineId, $payload);
+
         try {
-            $response = $this->serviceClient->sendRequestForJson(
-                $this->requestFactory->createMachineRequest($userToken, 'POST', $machineId)
-            );
+            $response = $this->serviceClient->sendRequestForJson($request);
         } catch (NonSuccessResponseException $e) {
             $response = $e->getResponse();
 
@@ -88,9 +93,13 @@ readonly class Client
         string $machineId,
         ?string $notifyUrl = null,
     ): Machine {
-        $response = $this->serviceClient->sendRequestForJson(
-            $this->requestFactory->createMachineRequest($userToken, 'GET', $machineId)
-        );
+        $payload = [];
+        if (null !== $notifyUrl) {
+            $payload['notify_url'] = $notifyUrl;
+        }
+
+        $request = $this->requestFactory->createMachineRequest($userToken, 'GET', $machineId, $payload);
+        $response = $this->serviceClient->sendRequestForJson($request);
 
         $machine = $this->machineFactory->create($response->getData());
         if (null === $machine) {
@@ -117,9 +126,13 @@ readonly class Client
         string $machineId,
         ?string $notifyUrl = null,
     ): Machine {
-        $response = $this->serviceClient->sendRequestForJson(
-            $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId)
-        );
+        $payload = [];
+        if (null !== $notifyUrl) {
+            $payload['notify_url'] = $notifyUrl;
+        }
+
+        $request = $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId, $payload);
+        $response = $this->serviceClient->sendRequestForJson($request);
 
         $machine = $this->machineFactory->create($response->getData());
         if (null === $machine) {
