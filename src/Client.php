@@ -25,8 +25,9 @@ readonly class Client
     ) {}
 
     /**
-     * @param non-empty-string $userToken
-     * @param non-empty-string $machineId
+     * @param non-empty-string  $userToken
+     * @param non-empty-string  $machineId
+     * @param ?non-empty-string $notifyUrl
      *
      * @throws ClientExceptionInterface
      * @throws InvalidResponseDataException
@@ -36,8 +37,11 @@ readonly class Client
      * @throws InvalidResponseTypeException
      * @throws UnauthorizedException
      */
-    public function createMachine(string $userToken, string $machineId): Machine
-    {
+    public function createMachine(
+        string $userToken,
+        string $machineId,
+        ?string $notifyUrl = null,
+    ): Machine {
         try {
             $response = $this->serviceClient->sendRequestForJson(
                 $this->requestFactory->createMachineRequest($userToken, 'POST', $machineId)
@@ -68,8 +72,9 @@ readonly class Client
     }
 
     /**
-     * @param non-empty-string $userToken
-     * @param non-empty-string $machineId
+     * @param non-empty-string  $userToken
+     * @param non-empty-string  $machineId
+     * @param ?non-empty-string $notifyUrl
      *
      * @throws ClientExceptionInterface
      * @throws InvalidResponseDataException
@@ -78,8 +83,11 @@ readonly class Client
      * @throws InvalidResponseTypeException
      * @throws UnauthorizedException
      */
-    public function getMachine(string $userToken, string $machineId): Machine
-    {
+    public function getMachine(
+        string $userToken,
+        string $machineId,
+        ?string $notifyUrl = null,
+    ): Machine {
         $response = $this->serviceClient->sendRequestForJson(
             $this->requestFactory->createMachineRequest($userToken, 'GET', $machineId)
         );
@@ -93,8 +101,9 @@ readonly class Client
     }
 
     /**
-     * @param non-empty-string $userToken
-     * @param non-empty-string $machineId
+     * @param non-empty-string  $userToken
+     * @param non-empty-string  $machineId
+     * @param ?non-empty-string $notifyUrl
      *
      * @throws ClientExceptionInterface
      * @throws InvalidResponseDataException
@@ -103,8 +112,11 @@ readonly class Client
      * @throws InvalidResponseTypeException
      * @throws UnauthorizedException
      */
-    public function deleteMachine(string $userToken, string $machineId): Machine
-    {
+    public function deleteMachine(
+        string $userToken,
+        string $machineId,
+        ?string $notifyUrl = null,
+    ): Machine {
         $response = $this->serviceClient->sendRequestForJson(
             $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId)
         );
