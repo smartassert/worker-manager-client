@@ -7,9 +7,12 @@ namespace SmartAssert\WorkerManagerClient\Tests\Functional\Client;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\DataProvider;
 use SmartAssert\WorkerManagerClient\Model\Machine;
+use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\NotifyUrlDataProviderTrait;
 
 class DeleteMachineTest extends AbstractClientTestCase
 {
+    use NotifyUrlDataProviderTrait;
+
     public function testDeleteMachineRequestProperties(): void
     {
         $userToken = md5((string) rand());
@@ -26,8 +29,8 @@ class DeleteMachineTest extends AbstractClientTestCase
     /**
      * @param ?non-empty-string $notifyUrl
      */
-    #[DataProvider('deleteMachineNotifyUrlProvider')]
-    public function testDeleteMachineNotifyUrl(?string $notifyUrl, string $expectedRequestQuery): void
+    #[DataProvider('notifyUrlDataProvider')]
+    public function testDeleteMachineNotifyUrl(?string $notifyUrl, string $expectedRequestPayload): void
     {
         $userToken = md5((string) rand());
         $machineId = md5((string) rand());
@@ -37,24 +40,7 @@ class DeleteMachineTest extends AbstractClientTestCase
 
         $request = $this->getLastRequest();
         self::assertSame('', $request->getBody()->getContents());
-        self::assertSame($expectedRequestQuery, $request->getUri()->getQuery());
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public static function deleteMachineNotifyUrlProvider(): array
-    {
-        return [
-            'null notify url' => [
-                'notifyUrl' => null,
-                'expectedRequestQuery' => '',
-            ],
-            'non-empty notify url' => [
-                'notifyUrl' => 'https://example.com/notify',
-                'expectedRequestQuery' => http_build_query(['notify_url' => 'https://example.com/notify']),
-            ],
-        ];
+        self::assertSame($expectedRequestPayload, $request->getUri()->getQuery());
     }
 
     protected function createClientActionCallable(): callable

@@ -9,10 +9,13 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use SmartAssert\WorkerManagerClient\Model\ActionFailure;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 use SmartAssert\WorkerManagerClient\Model\MetaState;
+use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\NotifyUrlDataProviderTrait;
 use Symfony\Component\Uid\Ulid;
 
 class GetMachineTest extends AbstractClientTestCase
 {
+    use NotifyUrlDataProviderTrait;
+
     public function testGetMachineRequestProperties(): void
     {
         $userToken = md5((string) rand());
@@ -254,8 +257,8 @@ class GetMachineTest extends AbstractClientTestCase
     /**
      * @param ?non-empty-string $notifyUrl
      */
-    #[DataProvider('getMachineNotifyUrlProvider')]
-    public function testGetMachineNotifyUrl(?string $notifyUrl, string $expectedRequestQuery): void
+    #[DataProvider('notifyUrlDataProvider')]
+    public function testGetMachineNotifyUrl(?string $notifyUrl, string $expectedRequestPayload): void
     {
         $userToken = md5((string) rand());
         $machineId = md5((string) rand());
@@ -265,24 +268,7 @@ class GetMachineTest extends AbstractClientTestCase
 
         $request = $this->getLastRequest();
         self::assertSame('', $request->getBody()->getContents());
-        self::assertSame($expectedRequestQuery, $request->getUri()->getQuery());
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public static function getMachineNotifyUrlProvider(): array
-    {
-        return [
-            'null notify url' => [
-                'notifyUrl' => null,
-                'expectedRequestQuery' => '',
-            ],
-            'non-empty notify url' => [
-                'notifyUrl' => 'https://example.com/notify',
-                'expectedRequestQuery' => http_build_query(['notify_url' => 'https://example.com/notify']),
-            ],
-        ];
+        self::assertSame($expectedRequestPayload, $request->getUri()->getQuery());
     }
 
     protected function createClientActionCallable(): callable

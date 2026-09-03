@@ -7,9 +7,12 @@ namespace SmartAssert\WorkerManagerClient\Tests\Functional\Client;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\DataProvider;
 use SmartAssert\WorkerManagerClient\Model\Machine;
+use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\NotifyUrlDataProviderTrait;
 
 class CreateMachineTest extends AbstractClientTestCase
 {
+    use NotifyUrlDataProviderTrait;
+
     public function testCreateMachineRequestProperties(): void
     {
         $userToken = md5((string) rand());
@@ -26,8 +29,8 @@ class CreateMachineTest extends AbstractClientTestCase
     /**
      * @param ?non-empty-string $notifyUrl
      */
-    #[DataProvider('createMachineNotifyUrlProvider')]
-    public function testCreateMachineNotifyUrl(?string $notifyUrl, string $expectedRequestBody): void
+    #[DataProvider('notifyUrlDataProvider')]
+    public function testCreateMachineNotifyUrl(?string $notifyUrl, string $expectedRequestPayload): void
     {
         $userToken = md5((string) rand());
         $machineId = md5((string) rand());
@@ -36,24 +39,7 @@ class CreateMachineTest extends AbstractClientTestCase
         $this->client->createMachine($userToken, $machineId, $notifyUrl);
 
         $request = $this->getLastRequest();
-        self::assertSame($expectedRequestBody, $request->getBody()->getContents());
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public static function createMachineNotifyUrlProvider(): array
-    {
-        return [
-            'null notify url' => [
-                'notifyUrl' => null,
-                'expectedRequestBody' => '',
-            ],
-            'non-empty notify url' => [
-                'notifyUrl' => 'https://example.com/notify',
-                'expectedRequestBody' => http_build_query(['notify_url' => 'https://example.com/notify']),
-            ],
-        ];
+        self::assertSame($expectedRequestPayload, $request->getBody()->getContents());
     }
 
     protected function createClientActionCallable(): callable
