@@ -25,8 +25,9 @@ readonly class Client
     ) {}
 
     /**
-     * @param non-empty-string $userToken
-     * @param non-empty-string $machineId
+     * @param non-empty-string  $userToken
+     * @param non-empty-string  $machineId
+     * @param ?non-empty-string $notifyUrl
      *
      * @throws ClientExceptionInterface
      * @throws InvalidResponseDataException
@@ -36,12 +37,20 @@ readonly class Client
      * @throws InvalidResponseTypeException
      * @throws UnauthorizedException
      */
-    public function createMachine(string $userToken, string $machineId): Machine
-    {
+    public function createMachine(
+        string $userToken,
+        string $machineId,
+        ?string $notifyUrl = null,
+    ): Machine {
+        $payload = [];
+        if (null !== $notifyUrl) {
+            $payload['notify_url'] = $notifyUrl;
+        }
+
+        $request = $this->requestFactory->createMachineRequest($userToken, 'POST', $machineId, $payload);
+
         try {
-            $response = $this->serviceClient->sendRequestForJson(
-                $this->requestFactory->createMachineRequest($userToken, 'POST', $machineId)
-            );
+            $response = $this->serviceClient->sendRequestForJson($request);
         } catch (NonSuccessResponseException $e) {
             $response = $e->getResponse();
 
@@ -68,8 +77,9 @@ readonly class Client
     }
 
     /**
-     * @param non-empty-string $userToken
-     * @param non-empty-string $machineId
+     * @param non-empty-string  $userToken
+     * @param non-empty-string  $machineId
+     * @param ?non-empty-string $notifyUrl
      *
      * @throws ClientExceptionInterface
      * @throws InvalidResponseDataException
@@ -78,11 +88,18 @@ readonly class Client
      * @throws InvalidResponseTypeException
      * @throws UnauthorizedException
      */
-    public function getMachine(string $userToken, string $machineId): Machine
-    {
-        $response = $this->serviceClient->sendRequestForJson(
-            $this->requestFactory->createMachineRequest($userToken, 'GET', $machineId)
-        );
+    public function getMachine(
+        string $userToken,
+        string $machineId,
+        ?string $notifyUrl = null,
+    ): Machine {
+        $payload = [];
+        if (null !== $notifyUrl) {
+            $payload['notify_url'] = $notifyUrl;
+        }
+
+        $request = $this->requestFactory->createMachineRequest($userToken, 'GET', $machineId, $payload);
+        $response = $this->serviceClient->sendRequestForJson($request);
 
         $machine = $this->machineFactory->create($response->getData());
         if (null === $machine) {
@@ -93,8 +110,9 @@ readonly class Client
     }
 
     /**
-     * @param non-empty-string $userToken
-     * @param non-empty-string $machineId
+     * @param non-empty-string  $userToken
+     * @param non-empty-string  $machineId
+     * @param ?non-empty-string $notifyUrl
      *
      * @throws ClientExceptionInterface
      * @throws InvalidResponseDataException
@@ -103,11 +121,18 @@ readonly class Client
      * @throws InvalidResponseTypeException
      * @throws UnauthorizedException
      */
-    public function deleteMachine(string $userToken, string $machineId): Machine
-    {
-        $response = $this->serviceClient->sendRequestForJson(
-            $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId)
-        );
+    public function deleteMachine(
+        string $userToken,
+        string $machineId,
+        ?string $notifyUrl = null,
+    ): Machine {
+        $payload = [];
+        if (null !== $notifyUrl) {
+            $payload['notify_url'] = $notifyUrl;
+        }
+
+        $request = $this->requestFactory->createMachineRequest($userToken, 'DELETE', $machineId, $payload);
+        $response = $this->serviceClient->sendRequestForJson($request);
 
         $machine = $this->machineFactory->create($response->getData());
         if (null === $machine) {

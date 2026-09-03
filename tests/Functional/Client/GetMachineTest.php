@@ -9,31 +9,18 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use SmartAssert\WorkerManagerClient\Model\ActionFailure;
 use SmartAssert\WorkerManagerClient\Model\Machine;
 use SmartAssert\WorkerManagerClient\Model\MetaState;
+use SmartAssert\WorkerManagerClient\Tests\Functional\DataProvider\NotifyUrlDataProviderTrait;
 use Symfony\Component\Uid\Ulid;
 
 class GetMachineTest extends AbstractClientTestCase
 {
+    use NotifyUrlDataProviderTrait;
+
     public function testGetMachineRequestProperties(): void
     {
         $userToken = md5((string) rand());
         $machineId = md5((string) rand());
-
-        $this->mockHandler->append(new Response(
-            200,
-            ['content-type' => 'application/json'],
-            (string) json_encode([
-                'id' => $machineId,
-                'state' => 'up/active',
-                'state_category' => 'active',
-                'ip_addresses' => [],
-                'has_active_state' => false,
-                'has_ending_state' => false,
-                'meta_state' => [
-                    'ended' => false,
-                    'succeeded' => false,
-                ],
-            ])
-        ));
+        $this->setMockGetResponse($machineId);
 
         $this->client->getMachine($userToken, $machineId);
 
@@ -267,6 +254,23 @@ class GetMachineTest extends AbstractClientTestCase
         ];
     }
 
+    /**
+     * @param ?non-empty-string $notifyUrl
+     */
+    #[DataProvider('notifyUrlDataProvider')]
+    public function testGetMachineNotifyUrl(?string $notifyUrl, string $expectedRequestPayload): void
+    {
+        $userToken = md5((string) rand());
+        $machineId = md5((string) rand());
+        $this->setMockGetResponse($machineId);
+
+        $this->client->getMachine($userToken, $machineId, $notifyUrl);
+
+        $request = $this->getLastRequest();
+        self::assertSame('', $request->getBody()->getContents());
+        self::assertSame($expectedRequestPayload, $request->getUri()->getQuery());
+    }
+
     protected function createClientActionCallable(): callable
     {
         return function () {
@@ -280,5 +284,26 @@ class GetMachineTest extends AbstractClientTestCase
     protected function getExpectedModelClass(): string
     {
         return Machine::class;
+    }
+
+    private function setMockGetResponse(string $machineId): void
+    {
+        $this->mockHandler->append(new Response(
+            202,
+            ['content-type' => 'application/json'],
+            (string) json_encode([
+                'id' => $machineId,
+                'state' => 'delete/requested',
+                'state_category' => 'ending',
+                'ip_addresses' => [],
+                'has_active_state' => false,
+                'has_ending_state' => true,
+                'meta_state' => [
+                    'pending' => false,
+                    'ended' => false,
+                    'succeeded' => false,
+                ],
+            ])
+        ));
     }
 }

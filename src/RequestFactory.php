@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SmartAssert\WorkerManagerClient;
 
 use SmartAssert\ServiceClient\Authentication\BearerAuthentication;
+use SmartAssert\ServiceClient\Payload\UrlEncodedPayload;
 use SmartAssert\ServiceClient\Request;
 use SmartAssert\ServiceClient\RequestFactory\AuthenticationMiddleware;
 use SmartAssert\ServiceClient\RequestFactory\RequestFactory as ServiceClientRequestFactory;
@@ -24,12 +25,27 @@ class RequestFactory extends ServiceClientRequestFactory
     }
 
     /**
-     * @param non-empty-string $method
+     * @param non-empty-string                $method
+     * @param array<non-empty-string, string> $payload
      */
-    public function createMachineRequest(string $token, string $method, string $machineId): Request
-    {
+    public function createMachineRequest(
+        string $token,
+        string $method,
+        string $machineId,
+        array $payload = [],
+    ): Request {
         $this->authenticationMiddleware->setAuthentication(new BearerAuthentication($token));
 
-        return $this->create($method, rtrim($this->baseUrl, '/') . '/machine/' . $machineId);
+        $url = rtrim($this->baseUrl, '/') . '/machine/' . $machineId;
+        if ([] !== $payload && 'POST' !== $method) {
+            $url .= '?' . http_build_query($payload);
+        }
+
+        $request = $this->create($method, $url);
+        if ([] !== $payload && 'POST' === $method) {
+            $request = $request->withPayload(new UrlEncodedPayload($payload));
+        }
+
+        return $request;
     }
 }
