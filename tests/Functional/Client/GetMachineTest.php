@@ -17,23 +17,7 @@ class GetMachineTest extends AbstractClientTestCase
     {
         $userToken = md5((string) rand());
         $machineId = md5((string) rand());
-
-        $this->mockHandler->append(new Response(
-            200,
-            ['content-type' => 'application/json'],
-            (string) json_encode([
-                'id' => $machineId,
-                'state' => 'up/active',
-                'state_category' => 'active',
-                'ip_addresses' => [],
-                'has_active_state' => false,
-                'has_ending_state' => false,
-                'meta_state' => [
-                    'ended' => false,
-                    'succeeded' => false,
-                ],
-            ])
-        ));
+        $this->setMockGetResponse($machineId);
 
         $this->client->getMachine($userToken, $machineId);
 
@@ -267,6 +251,40 @@ class GetMachineTest extends AbstractClientTestCase
         ];
     }
 
+    /**
+     * @param ?non-empty-string $notifyUrl
+     */
+    #[DataProvider('getMachineNotifyUrlProvider')]
+    public function testGetMachineNotifyUrl(?string $notifyUrl, string $expectedRequestQuery): void
+    {
+        $userToken = md5((string) rand());
+        $machineId = md5((string) rand());
+        $this->setMockGetResponse($machineId);
+
+        $this->client->getMachine($userToken, $machineId, $notifyUrl);
+
+        $request = $this->getLastRequest();
+        self::assertSame('', $request->getBody()->getContents());
+        self::assertSame($expectedRequestQuery, $request->getUri()->getQuery());
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public static function getMachineNotifyUrlProvider(): array
+    {
+        return [
+            'null notify url' => [
+                'notifyUrl' => null,
+                'expectedRequestQuery' => '',
+            ],
+            'non-empty notify url' => [
+                'notifyUrl' => 'https://example.com/notify',
+                'expectedRequestQuery' => http_build_query(['notify_url' => 'https://example.com/notify']),
+            ],
+        ];
+    }
+
     protected function createClientActionCallable(): callable
     {
         return function () {
@@ -280,5 +298,26 @@ class GetMachineTest extends AbstractClientTestCase
     protected function getExpectedModelClass(): string
     {
         return Machine::class;
+    }
+
+    private function setMockGetResponse(string $machineId): void
+    {
+        $this->mockHandler->append(new Response(
+            202,
+            ['content-type' => 'application/json'],
+            (string) json_encode([
+                'id' => $machineId,
+                'state' => 'delete/requested',
+                'state_category' => 'ending',
+                'ip_addresses' => [],
+                'has_active_state' => false,
+                'has_ending_state' => true,
+                'meta_state' => [
+                    'pending' => false,
+                    'ended' => false,
+                    'succeeded' => false,
+                ],
+            ])
+        ));
     }
 }
