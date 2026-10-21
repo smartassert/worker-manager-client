@@ -83,6 +83,7 @@ class GetMachineTest extends AbstractClientTestCase
                         'ended' => false,
                         'succeeded' => false,
                     ],
+                    'previous_states' => [],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -93,6 +94,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     metaState: new MetaState(ended: false, succeeded: false, pending: true),
+                    previousStates: [],
                 ),
             ],
             'without action failure, with ip addresses' => [
@@ -108,6 +110,7 @@ class GetMachineTest extends AbstractClientTestCase
                         'ended' => false,
                         'succeeded' => false,
                     ],
+                    'previous_states' => [],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -118,6 +121,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     metaState: new MetaState(ended: false, succeeded: false, pending: false),
+                    previousStates: [],
                 ),
             ],
             'with action failure, without ip addresses' => [
@@ -139,6 +143,7 @@ class GetMachineTest extends AbstractClientTestCase
                         'ended' => false,
                         'succeeded' => false,
                     ],
+                    'previous_states' => [],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -149,6 +154,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     metaState: new MetaState(ended: false, succeeded: false, pending: false),
+                    previousStates: [],
                 ),
             ],
             'has failed state' => [
@@ -164,6 +170,7 @@ class GetMachineTest extends AbstractClientTestCase
                         'ended' => true,
                         'succeeded' => false,
                     ],
+                    'previous_states' => [],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -174,6 +181,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     metaState: new MetaState(ended: true, succeeded: false, pending: false),
+                    previousStates: [],
                 ),
             ],
             'has active state' => [
@@ -189,6 +197,7 @@ class GetMachineTest extends AbstractClientTestCase
                         'ended' => false,
                         'succeeded' => false,
                     ],
+                    'previous_states' => [],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -199,6 +208,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: true,
                     hasEndingState: false,
                     metaState: new MetaState(ended: false, succeeded: false, pending: false),
+                    previousStates: [],
                 ),
             ],
             'has ending state' => [
@@ -224,6 +234,7 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: true,
                     metaState: new MetaState(ended: false, succeeded: false, pending: false),
+                    previousStates: [],
                 ),
             ],
             'has end state' => [
@@ -239,6 +250,7 @@ class GetMachineTest extends AbstractClientTestCase
                         'ended' => true,
                         'succeeded' => true,
                     ],
+                    'previous_states' => [],
                 ],
                 'expected' => new Machine(
                     id: $machineId,
@@ -249,6 +261,42 @@ class GetMachineTest extends AbstractClientTestCase
                     hasActiveState: false,
                     hasEndingState: false,
                     metaState: new MetaState(ended: true, succeeded: true, pending: false),
+                    previousStates: [],
+                ),
+            ],
+            'has previous states' => [
+                'responseData' => [
+                    'id' => $machineId,
+                    'state' => 'delete/deleted',
+                    'state_category' => 'end',
+                    'ip_addresses' => [],
+                    'has_active_state' => false,
+                    'has_ending_state' => false,
+                    'meta_state' => [
+                        'pending' => false,
+                        'ended' => true,
+                        'succeeded' => true,
+                    ],
+                    'previous_states' => [
+                        'state1',
+                        'state2',
+                        'state3',
+                    ],
+                ],
+                'expected' => new Machine(
+                    id: $machineId,
+                    state: 'delete/deleted',
+                    stateCategory: 'end',
+                    ipAddresses: [],
+                    actionFailure: null,
+                    hasActiveState: false,
+                    hasEndingState: false,
+                    metaState: new MetaState(ended: true, succeeded: true, pending: false),
+                    previousStates: [
+                        'state1',
+                        'state2',
+                        'state3',
+                    ],
                 ),
             ],
         ];
@@ -302,6 +350,11 @@ class GetMachineTest extends AbstractClientTestCase
                     'pending' => false,
                     'ended' => false,
                     'succeeded' => false,
+                ],
+                'previous_states' => [
+                    'state1',
+                    'state2',
+                    'state3',
                 ],
             ])
         ));

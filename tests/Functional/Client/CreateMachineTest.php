@@ -74,6 +74,7 @@ class CreateMachineTest extends AbstractClientTestCase
                     'ended' => false,
                     'succeeded' => false,
                 ],
+                'previous_states' => [],
             ])
         ));
     }

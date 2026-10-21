@@ -75,6 +75,11 @@ class DeleteMachineTest extends AbstractClientTestCase
                     'ended' => false,
                     'succeeded' => false,
                 ],
+                'previous_states' => [
+                    'state1',
+                    'state2',
+                    'state3',
+                ],
             ])
         ));
     }

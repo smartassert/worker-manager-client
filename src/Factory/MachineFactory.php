@@ -85,6 +85,12 @@ readonly class MachineFactory
         $metaStatePending = $metaState['pending'] ?? true;
         $metaStatePending = is_bool($metaStatePending) ? $metaStatePending : true;
 
+        $previousStates = $data['previous_states'] ?? [];
+        $previousStates = is_array($previousStates) ? $previousStates : [];
+        $filteredPreviousStates = array_filter($previousStates, function ($state) {
+            return is_string($state) && '' !== $state;
+        });
+
         return new Machine(
             $id,
             $state,
@@ -98,6 +104,7 @@ readonly class MachineFactory
                 $metaStateSucceeded,
                 $metaStatePending,
             ),
+            $filteredPreviousStates,
         );
     }
 }

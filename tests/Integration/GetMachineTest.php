@@ -16,12 +16,15 @@ class GetMachineTest extends AbstractIntegrationTestCase
         $expectedEndState = 'find/not-findable';
 
         $machine = self::$client->getMachine(self::$user1ApiToken, $machineId);
+        self::assertNotEmpty($machine->previousStates);
+
         self::assertSame($machineId, $machine->id);
         self::assertSame($expectedStartState, $machine->state);
 
         $machine = $this->waitUntilMachineStateIs($expectedEndState, $machine);
         self::assertSame($expectedEndState, $machine->state);
         self::assertTrue($machine->metaState->hasFailedState());
+        self::assertNotEmpty($machine->previousStates);
 
         self::assertEquals(
             new ActionFailure(

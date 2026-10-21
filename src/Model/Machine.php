@@ -11,6 +11,7 @@ readonly class Machine
      * @param non-empty-string   $state
      * @param non-empty-string   $stateCategory
      * @param non-empty-string[] $ipAddresses
+     * @param non-empty-string[] $previousStates
      */
     public function __construct(
         public string $id,
@@ -21,5 +22,6 @@ readonly class Machine
         public bool $hasActiveState,
         public bool $hasEndingState,
         public MetaState $metaState,
+        public array $previousStates,
     ) {}
 }

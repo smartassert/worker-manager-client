@@ -39,6 +39,7 @@ class CreateMachineTest extends AbstractIntegrationTestCase
                 hasActiveState: false,
                 hasEndingState: false,
                 metaState: new MetaState(ended: false, succeeded: false, pending: true),
+                previousStates: [],
             ),
             $response
         );
